@@ -2070,10 +2070,11 @@
       const daysInput = row.querySelector('.shift-days');
       const ndInput = row.querySelector('.shift-nd-hrs');
       const isOff = selectElem.value === 'off';
-      if (isOff) { daysInput.value = 0; ndInput.value = 0; }
+      if (isOff) ndInput.value = 0;
       else if (selectElem.value === 'night') ndInput.value = 8;
       else if (selectElem.value === 'morning' || selectElem.value === 'afternoon') ndInput.value = 0;
-      daysInput.disabled = isOff;
+      daysInput.disabled = false;
+      daysInput.setAttribute('aria-label',isOff?'Off days':'Days worked');
       ndInput.disabled = isOff;
       calculate();
     }
@@ -2096,9 +2097,8 @@
       `;
       shiftList.appendChild(div);
       if (type === 'off') {
-        div.querySelector('.shift-days').value = 0;
         div.querySelector('.shift-nd-hrs').value = 0;
-        div.querySelector('.shift-days').disabled = true;
+        div.querySelector('.shift-days').setAttribute('aria-label','Off days');
         div.querySelector('.shift-nd-hrs').disabled = true;
       }
       calculate();
@@ -2794,19 +2794,24 @@
         `Daily Rate: ${fmt(dailyRate)} | Hourly: ${fmt(hourlyRate)}`;
 
       let totalDaysWorked = 0;
+      let totalOffDays = 0;
       let totalNDPay = 0;
 
       document.querySelectorAll('.shift-row').forEach(row => {
         const days = parseFloat(row.querySelector('.shift-days').value) || 0;
         const ndHrs = parseFloat(row.querySelector('.shift-nd-hrs').value) || 0;
+        const isOff = row.querySelector('.shift-type').value === 'off';
 
-        totalDaysWorked += days;
-        const ndRate = nightDiffPercent / 100;
-        const ndPerHour = hourlyRate * ndRate;
-        totalNDPay += (days * ndHrs * ndPerHour);
+        if (isOff) totalOffDays += days;
+        else {
+          totalDaysWorked += days;
+          const ndRate = nightDiffPercent / 100;
+          const ndPerHour = hourlyRate * ndRate;
+          totalNDPay += (days * ndHrs * ndPerHour);
+        }
       });
 
-      document.getElementById('totalDaysDisplay').textContent = `${totalDaysWorked} / 10 Days`;
+      document.getElementById('totalDaysDisplay').textContent = `${totalDaysWorked} worked • ${totalOffDays} off`;
       document.getElementById('nightDiffDisplay').textContent = fmt(totalNDPay);
 
       const regularOtHrs = parseFloat(document.getElementById('regularOtHrs').value) || 0;
@@ -2954,12 +2959,15 @@
       const baseMonthly=valueOf('basicSalary'), daysPerMonth=valueOf('daysPerMonth')||20;
       const rules=getActivePayrollRules(), hoursPerDay=rules.hoursPerDay||8;
       const dailyRate=baseMonthly/daysPerMonth, hourlyRate=dailyRate/hoursPerDay;
-      let totalDaysWorked=0,totalNDPay=0;
+      let totalDaysWorked=0,totalOffDays=0,totalNDPay=0;
       document.querySelectorAll('.shift-row').forEach(row=>{
         const days=Math.max(0,parseFloat(row.querySelector('.shift-days').value)||0);
         const ndHrs=Math.max(0,parseFloat(row.querySelector('.shift-nd-hrs').value)||0);
-        totalDaysWorked+=days;
-        totalNDPay+=days*ndHrs*hourlyRate*((rules.nightDiff ?? DEFAULT_NIGHT_DIFF_PERCENT)/100);
+        if(row.querySelector('.shift-type').value==='off')totalOffDays+=days;
+        else{
+          totalDaysWorked+=days;
+          totalNDPay+=days*ndHrs*hourlyRate*((rules.nightDiff ?? DEFAULT_NIGHT_DIFF_PERCENT)/100);
+        }
       });
       const holidayDays=holidays.reduce((s,h)=>s+(Number(h.days)||0),0);
       const errors=validateInputs(totalDaysWorked,holidayDays);
@@ -2989,7 +2997,7 @@
       const netPay=Math.max(0,grossPay-totalDeductions);
       const write=(id,text)=>{const el=document.getElementById(id);if(el)el.textContent=text;};
       write('hourlyRateDisplay',`Daily Rate: ${fmt(dailyRate)} | Hourly: ${fmt(hourlyRate)}`);
-      write('totalDaysDisplay',`${totalDaysWorked} worked • ${payableDays} paid day(s)`);
+      write('totalDaysDisplay',`${totalDaysWorked} worked • ${totalOffDays} off • ${payableDays} paid day(s)`);
       write('nightDiffDisplay',fmt(totalNDPay)); write('netPayDisplay',fmt(netPay)); write('grossDisplay',fmt(grossPay));
       write('deductionDisplay',`−${fmt(totalDeductions)}`); write('valBasicEarned',fmt(basicEarned)); write('valNDBreakdown',fmt(totalNDPay));
       write('valOTBreakdown',fmt(totalOTPay)); write('valHolidayBreakdown',fmt(holidayPremium)); write('holidayPremiumDisplay',fmt(holidayPremium));
