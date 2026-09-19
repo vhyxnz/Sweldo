@@ -2831,7 +2831,7 @@
 
       const holidayPremium = getHolidayPremium(dailyRate);
 
-      const basicEarned = dailyRate * totalDaysWorked;
+      const basicEarned = dailyRate * (totalDaysWorked + totalOffDays);
       const otherDeduct = parseFloat(document.getElementById('otherDeductions').value) || 0;
 
       const grossPay = basicEarned + totalNDPay + totalOTPay + holidayPremium;
@@ -2897,12 +2897,14 @@
       return el ? Math.max(0, Number.parseFloat(el.value) || 0) : 0;
     }
 
-    // SSS contribution: gross pay is floored to the nearest ₱500 bracket (e.g. 10,124.63 -> 10,000),
-    // then 5% Employee Share (deducted from pay) / 10% Employer Share (paid by company, not deducted).
+    // SSS January 2025 schedule: each ₱500 MSC band changes at its ₱250 midpoint.
+    // Example: ₱10,750–₱11,249.99 maps to an ₱11,000 MSC and a ₱550 employee share.
     const SSS_EMPLOYEE_RATE = 0.05;
     const SSS_EMPLOYER_RATE = 0.10;
     function getSSSBracket(grossPay) {
-      return Math.floor(Math.max(0, grossPay) / 500) * 500;
+      const compensation=Math.max(0,Number(grossPay)||0);
+      if(compensation===0)return 0;
+      return Math.min(35000,Math.max(5000,Math.round(compensation/500)*500));
     }
     function getSSSContribution(grossPay) {
       // Returns the EMPLOYEE share only — this is what gets deducted from take-home pay.
@@ -2938,13 +2940,13 @@
       return money(91770.70 + (t - 333333) * .35);
     }
 
-    function validateInputs(totalDays, holidayDays) {
+    function validateInputs(totalDays, holidayDays, totalPaidScheduleDays = totalDays) {
       const errors=[];
       document.querySelectorAll('.field-error').forEach(el=>el.classList.remove('field-error'));
       const mark=(id,msg)=>{ const el=document.getElementById(id); if(el)el.classList.add('field-error'); errors.push(msg); };
       if(valueOf('basicSalary')<=0) mark('basicSalary','Enter a monthly salary greater than zero.');
       if(valueOf('daysPerMonth')<1||valueOf('daysPerMonth')>31) mark('daysPerMonth','Paid working days must be between 1 and 31.');
-      if(totalDays>31) errors.push('Total shift days cannot exceed 31 for one payroll period.');
+      if(totalPaidScheduleDays>31) errors.push('Total worked and paid off days cannot exceed 31 for one payroll period.');
       if(valueOf('absenceDays')>totalDays) mark('absenceDays','Absence days cannot exceed entered shift days.');
       if(holidayDays>totalDays) errors.push('Holiday days exceed total shift days; confirm that the same worked days are represented correctly.');
       document.querySelectorAll('input[type=number]').forEach(el=>{if(Number(el.value)<0){el.classList.add('field-error');errors.push('Negative payroll amounts are not allowed.');}});
@@ -2970,11 +2972,12 @@
         }
       });
       const holidayDays=holidays.reduce((s,h)=>s+(Number(h.days)||0),0);
-      const errors=validateInputs(totalDaysWorked,holidayDays);
+      const totalPaidScheduleDays=totalDaysWorked+totalOffDays;
+      const errors=validateInputs(totalDaysWorked,holidayDays,totalPaidScheduleDays);
       const absenceDays=valueOf('absenceDays'), undertimeHours=valueOf('undertimeHours');
-      const payableDays=Math.max(0,totalDaysWorked-absenceDays);
+      const payableDays=Math.max(0,totalPaidScheduleDays-absenceDays);
       const attendanceDeduction=absenceDays*dailyRate+undertimeHours*hourlyRate;
-      const basicEarned=Math.max(0,dailyRate*totalDaysWorked-attendanceDeduction);
+      const basicEarned=Math.max(0,dailyRate*totalPaidScheduleDays-attendanceDeduction);
       const regularOtPay=valueOf('regularOtHrs')*hourlyRate*((rules.regularOt||125)/100);
       const restDayPay=valueOf('restDaysWorked')*dailyRate*((rules.restDay||130)/100);
       const restDayOtPay=valueOf('restDayOtHrs')*hourlyRate*((rules.restOt||169)/100);
@@ -3005,7 +3008,7 @@
       [['rowGov',incGov],['rowPhilhealth',incPhil],['rowPagibig',incPagibig],['rowTax',incTax]].forEach(([id,on])=>document.getElementById(id).classList.toggle('disabled',!on));
       write('dockNet',fmt(netPay));write('dockMeta',`Gross ${fmt(grossPay)} · Deductions ${fmt(totalDeductions)}`);
       const formula=document.getElementById('formulaDetails');
-      if(formula)formula.innerHTML=`Basic: ${totalDaysWorked} days × ${fmt(dailyRate)} − attendance adjustment ${fmt(attendanceDeduction)} = <strong>${fmt(basicEarned)}</strong><br>Premiums: ND ${fmt(totalNDPay)} + OT/rest day ${fmt(totalOTPay)} + holiday ${fmt(holidayPremium)}<br>Mandatory employee share: SSS ${fmt(sss)}, PhilHealth ${fmt(phil)}, Pag-IBIG ${fmt(pagibig)}<br>Taxable compensation for this period: ${fmt(taxableIncome)} → withholding ${fmt(tax)}<br><strong>Net = ${fmt(grossPay)} − ${fmt(totalDeductions)} = ${fmt(netPay)}</strong>`;
+      if(formula)formula.innerHTML=`Basic: ${totalDaysWorked} worked + ${totalOffDays} paid off = ${totalPaidScheduleDays} paid days × ${fmt(dailyRate)} − attendance adjustment ${fmt(attendanceDeduction)} = <strong>${fmt(basicEarned)}</strong><br>Premiums: ND ${fmt(totalNDPay)} + OT/rest day ${fmt(totalOTPay)} + holiday ${fmt(holidayPremium)}<br>Mandatory employee share: SSS ${fmt(sss)}, PhilHealth ${fmt(phil)}, Pag-IBIG ${fmt(pagibig)}<br>Taxable compensation for this period: ${fmt(taxableIncome)} → withholding ${fmt(tax)}<br><strong>Net = ${fmt(grossPay)} − ${fmt(totalDeductions)} = ${fmt(netPay)}</strong>`;
       const cutoffResult={gross:grossPay,deductions:totalDeductions,net:netPay,basic:basicEarned,nightDiff:totalNDPay,ot:totalOTPay,holiday:holidayPremium,sss,phil,pagibig,tax,other,taxableIncome,errors};
       if(currentPeriod==='monthly') renderMonthlySummary(cutoffResult);
       else { window.currentPayrollResult=cutoffResult; saveCurrentCutoffDraft(); markUnsaved(); }
