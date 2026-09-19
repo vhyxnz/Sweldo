@@ -1,0 +1,14 @@
+{
+  "name": "Sweldo — Philippine Salary Calculator",
+  "short_name": "Sweldo",
+  "description": "Estimate Philippine take-home pay and track payroll history.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F5FA",
+  "theme_color": "#2454E0",
+  "icons": [
+    {"src":"SLogo.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"Sweldo Logo.png","sizes":"512x512","type":"image/png","purpose":"any"}
+  ]
+}

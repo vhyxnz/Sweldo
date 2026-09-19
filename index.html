@@ -1,0 +1,3281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <link rel="icon" type="image/png" href="SLogo.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#2454E0">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Sweldo — Philippine Salary Calculator</title>
+  <style>
+    :root {
+      --bg: #F3F5FA;
+      --card: #FFFFFF;
+      --text: #121A2C;
+      --text-muted: #6B7386;
+      --accent: #2454E0;
+      --accent-2: #4F8CFF;
+      --accent-light: #EAF0FF;
+      --border: #E7EAF2;
+      --danger: #E5484D;
+      --danger-light: #FDECEC;
+      --success: #12915B;
+      --success-light: #E8F8F0;
+      --warning: #C2680A;
+      --warning-light: #FDF1DF;
+      --shadow: 0 1px 2px rgba(20, 30, 60, 0.04), 0 8px 24px rgba(20, 30, 60, 0.06);
+      --shadow-lg: 0 4px 10px rgba(20, 30, 60, 0.06), 0 16px 40px rgba(20, 30, 60, 0.10);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --ease: cubic-bezier(.2,.8,.2,1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0A0E16;
+      --card: #161C28;
+      --text: #F2F4F8;
+      --text-muted: #8B93A7;
+      --accent: #5B8DFF;
+      --accent-2: #7BA6FF;
+      --accent-light: #1B2740;
+      --border: #262E3F;
+      --danger-light: rgba(229,72,77,.14);
+      --success-light: rgba(18,145,91,.14);
+      --warning-light: rgba(194,104,10,.16);
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+      --shadow-lg: 0 4px 10px rgba(0,0,0,0.35), 0 20px 48px rgba(0,0,0,0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding-bottom: 82px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: 14.5px;
+      line-height: 1.45;
+      transition: background-color 0.25s var(--ease), color 0.25s var(--ease);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+    }
+
+    ::selection { background: var(--accent); color: #fff; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+
+    button, .segmented-btn, .nav-item, input, select { -webkit-user-select: none; user-select: none; }
+    input, select, textarea { user-select: text; -webkit-user-select: text; }
+
+    .header {
+      padding: 9px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .brand span { color: var(--accent); }
+
+    .icon-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 13px;
+      transition: transform .15s var(--ease), background .15s var(--ease), border-color .15s var(--ease);
+    }
+
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .icon-btn:active { transform: scale(0.92); }
+
+    .container {
+      padding: 0 10px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(155deg, var(--card) 30%, var(--accent-light));
+      border-radius: 20px;
+      padding: 20px 18px 18px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .hero-card::before {
+      content: "₱";
+      position: absolute;
+      top: -34px;
+      right: -14px;
+      font-size: 140px;
+      font-weight: 900;
+      color: var(--accent);
+      opacity: 0.05;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .hero-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 4px;
+      position: relative;
+    }
+
+    .hero-amount {
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.8px;
+      margin-bottom: 12px;
+      position: relative;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .summary-pills {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      position: relative;
+    }
+
+    .pill {
+      background: var(--bg);
+      padding: 9px 10px;
+      border-radius: 12px;
+      text-align: left;
+      border: 1px solid transparent;
+    }
+
+    .pill-title {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .pill-value {
+      font-size: 14px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .segmented-control {
+      background: var(--border);
+      padding: 3px;
+      border-radius: 11px;
+      display: flex;
+      margin-bottom: 12px;
+      gap: 2px;
+    }
+
+    .segmented-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 8px 0;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .18s var(--ease), color .18s var(--ease), box-shadow .18s var(--ease);
+    }
+
+    .segmented-btn.active {
+      background: var(--card);
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(20,30,60,.10);
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin: 14px 2px 6px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      transition: box-shadow .2s var(--ease);
+    }
+
+    .section-head {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+
+    .section-badge {
+      font-size:10px;
+      font-weight:700;
+      color:var(--accent);
+      background:var(--accent-light);
+      border-radius:999px;
+      padding:4px 8px;
+      white-space:nowrap;
+      letter-spacing: .2px;
+    }
+
+    .holiday-row {
+      display:grid;
+      grid-template-columns: 1.8fr 1fr auto;
+      gap:8px;
+      align-items:center;
+      background:var(--bg);
+      border-radius:var(--radius-sm);
+      padding:9px;
+      margin-bottom:7px;
+      border: 1px solid transparent;
+      transition: border-color .15s var(--ease);
+    }
+
+    .holiday-row:hover { border-color: var(--border); }
+
+    .holiday-summary {
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:9px;
+      padding-top:9px;
+      border-top:1px solid var(--border);
+      font-size:11.5px;
+      font-weight: 600;
+    }
+
+    .holiday-rate {
+      font-size:10px;
+      font-weight:700;
+      color:var(--warning);
+      background:var(--warning-light);
+      border-radius:6px;
+      padding:3px 7px;
+      display: inline-block;
+      margin-top: 3px;
+    }
+
+    .holiday-empty {
+      font-size:11.5px;
+      color:var(--text-muted);
+      text-align:center;
+      padding:16px 0;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .input-group {
+      margin-bottom: 10px;
+    }
+
+    .input-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .input-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: block;
+      color: var(--text-muted);
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .currency-symbol {
+      position: absolute;
+      left: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    input[type="number"], input[type="date"], input[type="text"], select, textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 10px 10px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s var(--ease), box-shadow .15s var(--ease);
+      min-height: 40px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    select {
+      padding-left: 10px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B7386' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 26px;
+    }
+
+    input[type="number"]:focus, input[type="date"]:focus, input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    input::placeholder, textarea::placeholder { color: var(--text-muted); font-weight: 500; opacity: .8; }
+
+    .shift-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 7px;
+      background: var(--bg);
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      transition: border-color .15s var(--ease);
+    }
+
+    .shift-row:hover { border-color: var(--border); }
+
+    .shift-header {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      padding: 0 8px 6px;
+    }
+
+    .btn-remove {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s var(--ease), transform .1s var(--ease);
+    }
+
+    .btn-remove:hover { background: var(--danger); color: #fff; }
+    .btn-remove:active { transform: scale(0.9); }
+
+    .btn-add {
+      width: 100%;
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1.5px dashed var(--accent);
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 12.5px;
+      cursor: pointer;
+      min-height: 40px;
+      transition: background .15s var(--ease), transform .1s var(--ease);
+    }
+
+    .btn-add:hover { background: var(--accent); color: #fff; }
+    .btn-add:active { transform: scale(0.98); }
+
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--accent);
+      border: 1.5px solid var(--border);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 11.5px;
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 36px;
+      transition: border-color .15s var(--ease), background .15s var(--ease), transform .1s var(--ease);
+    }
+
+    .btn-secondary:hover { border-color: var(--accent); background: var(--accent-light); }
+    .btn-secondary:active { transform: scale(0.97); }
+
+    .btn-danger-sm {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1.5px solid transparent;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 11.5px;
+      cursor: pointer;
+      min-height: 36px;
+      transition: background .15s var(--ease), transform .1s var(--ease);
+    }
+
+    .btn-danger-sm:hover { background: var(--danger); color: #fff; }
+    .btn-danger-sm:active { transform: scale(0.95); }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toggle-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .toggle-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--border);
+      transition: .2s var(--ease);
+      border-radius: 24px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,.06);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s var(--ease);
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,.25);
+    }
+
+    input:checked + .slider {
+      background-color: var(--success);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 12.5px;
+      border-bottom: 1px dashed var(--border);
+      transition: opacity .2s var(--ease);
+    }
+
+    .breakdown-row:last-child {
+      border-bottom: none;
+    }
+
+    .breakdown-row.disabled {
+      opacity: 0.35;
+    }
+
+    .deduction-val {
+      color: var(--danger);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .breakdown-row > span:first-child { color: var(--text-muted); font-weight: 500; }
+
+    .app-view.active {
+      animation: viewFadeIn .28s var(--ease);
+    }
+
+    @keyframes viewFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sticky-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      padding: 10px 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      transition: transform .1s var(--ease), box-shadow .15s var(--ease), filter .15s var(--ease);
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 6px 16px rgba(36,84,224,.28);
+    }
+
+    .btn-primary:hover { filter: brightness(1.06); }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+      box-shadow: 0 6px 16px rgba(18,145,91,.24);
+    }
+
+    .btn-success:hover { filter: brightness(1.06); }
+
+    .btn-secondary.btn { background: var(--card); color: var(--text); border: 1.5px solid var(--border); box-shadow: none; }
+
+    .badge-info {
+      font-size: 11px;
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 5px 9px;
+      border-radius: 7px;
+      font-weight: 700;
+      display: inline-block;
+      margin-top: 6px;
+    }
+
+    .profile-bar {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+
+    .archive-actions{display:flex;gap:6px;align-items:center}
+    .archive-list{display:flex;flex-direction:column;gap:8px}
+    .archive-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;transition:border-color .15s var(--ease), transform .1s var(--ease)}
+    .archive-item:hover{border-color:var(--accent)}
+    .archive-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+    .archive-date{font-size:12px;font-weight:700}
+    .archive-period{font-size:10.5px;color:var(--text-muted);margin-top:2px}
+    .archive-net{font-size:16px;font-weight:800;color:var(--accent);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .archive-details{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+    .archive-detail{font-size:10px;color:var(--text-muted)}
+    .archive-detail strong{display:block;color:var(--text);font-size:11.5px;margin-top:2px}
+    .archive-note{margin-top:7px;font-size:10.5px;color:var(--text-muted);font-style:italic;line-height:1.4}
+    .archive-empty{text-align:center;color:var(--text-muted);font-size:12px;padding:22px 8px}
+    .archive-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+    .archive-stat{background:var(--bg);border-radius:var(--radius-sm);padding:9px;border:1px solid var(--border)}
+    .archive-stat span{display:block;color:var(--text-muted);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+    .archive-stat strong{display:block;font-size:13px;margin-top:3px;font-variant-numeric:tabular-nums}
+    .modal-overlay.archive-modal{z-index:1200;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+    .archive-modal .modal-card{position:relative;display:flex;flex-direction:column;text-align:left;max-width:390px;max-height:calc(100dvh - max(24px,env(safe-area-inset-top) + env(safe-area-inset-bottom)));overflow:hidden}
+    .archive-modal .modal-card h3{font-size:17px;margin-bottom:4px;font-weight:800}
+    .archive-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;overflow-y:auto;overscroll-behavior:contain;padding:2px 3px 16px 1px;scrollbar-gutter:stable}
+    .archive-form-full{grid-column:1/-1}
+    .archive-modal label{display:block;font-size:10.5px;font-weight:700;margin-bottom:5px;color:var(--text-muted)}
+    .archive-modal input,.archive-modal select,.archive-modal textarea{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:9px 10px;color:var(--text);font-size:14px;outline:none;transition:border-color .15s var(--ease), box-shadow .15s var(--ease)}
+    .archive-modal input:focus,.archive-modal select:focus,.archive-modal textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+    .archive-modal textarea{min-height:58px;resize:vertical}
+    .archive-modal-actions{display:flex;gap:8px;margin-top:14px}
+    .archive-modal .archive-modal-actions{flex:0 0 auto;margin:0 -18px -18px;padding:12px 18px max(12px,env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--border);box-shadow:0 -8px 20px color-mix(in srgb,var(--bg) 45%,transparent)}
+    .archive-modal-close{position:absolute;top:10px;right:10px;z-index:2;width:40px;height:40px;min-height:40px;padding:0;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text-muted);display:grid;place-items:center;cursor:pointer}
+    .archive-modal-close:hover{color:var(--text);border-color:var(--accent);background:var(--accent-light)}
+    .archive-modal-close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+    .archive-modal-actions .btn{min-height:42px}
+    .archive-action{border:0;background:transparent;color:var(--accent);font-size:11.5px;font-weight:700;cursor:pointer;padding:4px 6px;border-radius:6px;transition:background .15s var(--ease)}
+    .archive-action:hover{background:var(--accent-light)}
+    .archive-action.delete{color:var(--danger)}
+    .archive-action.delete:hover{background:var(--danger-light)}
+    @media(max-width:360px){.archive-stat-grid{grid-template-columns:1fr 1fr}.archive-stat:last-child{grid-column:1/-1}.archive-form-grid{grid-template-columns:1fr}.archive-form-full{grid-column:auto}}
+
+    /* Compare Feature */
+    .btn-compare {
+      width: 100%;
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 12.5px;
+      cursor: pointer;
+      min-height: 40px;
+      margin-bottom: 10px;
+      transition: background .15s var(--ease), color .15s var(--ease), transform .1s var(--ease);
+    }
+
+    .btn-compare:hover { background: var(--accent); color: #fff; }
+    .btn-compare:active { transform: scale(0.98); }
+
+    .compare-modal-card { max-width: 400px; text-align: left; }
+    .compare-modal-card select { margin-bottom: 4px; }
+
+    .compare-table {
+      margin-top: 4px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .compare-header-row, .compare-row {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr 1.15fr;
+      gap: 4px;
+      align-items: center;
+      padding: 8px 9px;
+    }
+
+    .compare-header-row {
+      background: var(--bg);
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      color: var(--text-muted);
+    }
+
+    .compare-header-row span:not(:first-child),
+    .compare-row span:not(.compare-label):not(.compare-diff) {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .compare-row {
+      border-top: 1px dashed var(--border);
+      font-size: 11px;
+    }
+
+    .compare-row-highlight {
+      background: var(--accent-light);
+      font-weight: 800;
+      font-size: 11.5px;
+    }
+
+    .compare-label { color: var(--text-muted); font-weight: 600; }
+    .compare-row-highlight .compare-label { color: var(--text); }
+
+    .compare-diff {
+      text-align: right;
+      font-weight: 700;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .compare-diff.positive { color: var(--success); }
+    .compare-diff.negative { color: var(--danger); }
+    .compare-diff.neutral { color: var(--text-muted); font-weight: 600; }
+
+    .compare-note {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 9px 10px;
+    }
+
+    @media (max-width: 360px) {
+      .compare-header-row, .compare-row { grid-template-columns: 1.1fr 0.9fr 0.9fr 1fr; font-size: 10px; }
+      .compare-diff { font-size: 9px; }
+    }
+
+
+    /* ===== Collapsible Payslips / Backup / Developer Formula Editor ===== */
+    .archive-item { overflow:hidden; }
+    .archive-toggle {
+      width:100%; border:0; background:transparent; color:inherit; padding:0;
+      cursor:pointer; text-align:left;
+    }
+    .archive-toggle .archive-top { padding:0; }
+    .archive-chevron {
+      display:inline-flex; width:24px; height:24px; align-items:center; justify-content:center;
+      border-radius:8px; background:var(--accent-light); color:var(--accent);
+      font-size:12px; margin-right:6px; transition:transform .2s var(--ease);
+    }
+    .archive-item.expanded .archive-chevron { transform:rotate(180deg); }
+    .archive-details-wrap {
+      display:grid; grid-template-rows:0fr; transition:grid-template-rows .22s var(--ease);
+    }
+    .archive-item.expanded .archive-details-wrap { grid-template-rows:1fr; }
+    .archive-details-inner { overflow:hidden; min-height:0; }
+    .archive-details { margin-top:8px; }
+    .archive-tools { display:flex; gap:6px; flex-wrap:wrap; }
+    .backup-card-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+    .developer-formula-list { display:flex; flex-direction:column; gap:10px; text-align:left; margin-top:12px; }
+    .formula-row { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px; }
+    .formula-row label { display:block; font-size:11px; font-weight:800; margin-bottom:5px; }
+    .formula-row small { display:block; color:var(--text-muted); font-size:9.5px; line-height:1.4; margin-top:4px; }
+    .formula-row input { padding:9px 10px; min-height:38px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; }
+    .developer-warning { background:var(--warning-light); color:var(--warning); border-radius:var(--radius-sm); padding:9px 10px; font-size:10.5px; line-height:1.45; text-align:left; margin-top:10px; }
+    .modal-wide { max-width:440px; max-height:88svh; overflow:auto; }
+    .modal-wide .archive-modal-actions { position:sticky; bottom:0; background:var(--card); padding-top:8px; }
+
+
+    .formula-modal-card{max-width:410px;text-align:left;max-height:88svh;overflow:auto}
+    .formula-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+    .rate-input{display:flex;align-items:center;gap:6px}
+    .rate-input input{flex:1;padding-left:10px!important}
+    .rate-input span{color:var(--text-muted);font-size:10px;font-weight:700;white-space:nowrap}
+    @media(max-width:380px){.formula-grid{grid-template-columns:1fr}}
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10,14,22,0.55);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+      animation: fadeIn .18s var(--ease);
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    .modal-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 18px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      animation: modalIn .22s var(--ease);
+    }
+
+    .modal-card img {
+      width: 100%;
+      display: block;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin: 12px 0;
+    }
+  
+
+    .formula-modal-card { max-width: 410px; text-align: left; }
+    .formula-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; }
+    .rate-input { display:flex; align-items:center; gap:6px; }
+    .rate-input input { flex:1; padding-left:10px !important; }
+    .rate-input span { color:var(--text-muted); font-size:12px; font-weight:700; min-width:25px; }
+    @media(max-width:380px){ .formula-grid{grid-template-columns:1fr;} }
+
+    /* ===== App Views / Bottom Navigation ===== */
+    .app-view {
+      display: none !important;
+    }
+
+    .app-view.active {
+      display: block !important;
+    }
+
+    .home-view {
+      min-height: calc(100svh - 190px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 16px 0 22px;
+    }
+
+    .home-hero {
+      background: linear-gradient(145deg, var(--card), var(--accent-light));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 25px 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .home-logo {
+      width: 66px;
+      height: 66px;
+      border-radius: 20px;
+      background: linear-gradient(155deg, var(--accent), var(--accent-2));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 29px;
+      font-weight: 900;
+      box-shadow: 0 12px 28px rgba(36,84,224,.28);
+    }
+
+    .home-title {
+      font-size: 30px;
+      line-height: 1.08;
+      letter-spacing: -1px;
+      font-weight: 850;
+    }
+
+    .home-title span {
+      color: var(--accent);
+    }
+
+    .home-subtitle {
+      color: var(--text-muted);
+      font-size: 12.5px;
+      line-height: 1.6;
+      margin: 10px auto 0;
+      max-width: 350px;
+    }
+
+    .home-cta {
+      margin-top: 20px;
+      width: 100%;
+      min-height: 46px;
+      border: 0;
+      border-radius: 13px;
+      background: linear-gradient(155deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: 800;
+      font-size: 13.5px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(36,84,224,.24);
+      transition: transform .12s var(--ease), box-shadow .15s var(--ease);
+    }
+
+    .home-cta:hover { box-shadow: 0 10px 24px rgba(36,84,224,.32); }
+    .home-cta:active { transform: scale(0.97); }
+
+    .home-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+
+    .home-feature {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 13px;
+      box-shadow: var(--shadow);
+      transition: transform .15s var(--ease), box-shadow .15s var(--ease), border-color .15s var(--ease);
+    }
+
+    .home-feature:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+
+    .home-feature-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      margin-bottom: 9px;
+    }
+
+    .home-feature-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .home-feature-text {
+      color: var(--text-muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .home-tip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 13px 14px;
+      color: var(--text-muted);
+      font-size: 10.5px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .home-tip strong {
+      color: var(--text);
+    }
+
+    .view-title {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+      margin: 6px 2px 3px;
+    }
+
+    .view-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin: 0 2px 12px;
+      line-height: 1.5;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: min(520px, 100%);
+      height: 68px;
+      padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+      background: color-mix(in srgb, var(--card) 94%, transparent);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -6px 20px rgba(20,30,60,.08);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      z-index: 1000;
+    }
+
+    .nav-item {
+      border: 0;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      font-size: 9.5px;
+      font-weight: 700;
+      -webkit-tap-highlight-color: transparent;
+      transition: color .15s var(--ease);
+    }
+
+    .nav-item .nav-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: background .18s var(--ease), transform .15s var(--ease);
+    }
+
+    .nav-item:active .nav-icon { transform: scale(0.9); }
+
+    .nav-item.active {
+      color: var(--accent);
+    }
+
+    .nav-item.active .nav-icon {
+      background: var(--accent-light);
+    }
+
+    body {
+      padding-bottom: 84px;
+    }
+
+    .sticky-actions {
+      z-index: 999;
+      bottom: 76px;
+    }
+
+    @media (max-width: 360px) {
+      .home-title { font-size: 27px; }
+      .home-hero { padding: 22px 16px; }
+    }
+
+
+    /* ===== Fixed Top Bar ===== */
+    .header {
+      position: fixed !important;
+      top: 0 !important;
+      left: 50% !important;
+      right: auto !important;
+      transform: translateX(-50%) !important;
+      width: min(520px, 100%) !important;
+      height: 54px !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 8px 12px !important;
+      margin: 0 !important;
+      z-index: 1100 !important;
+      background: color-mix(in srgb, var(--card) 92%, transparent) !important;
+      backdrop-filter: blur(14px) !important;
+      -webkit-backdrop-filter: blur(14px) !important;
+      border-bottom: 1px solid var(--border) !important;
+      box-shadow: 0 2px 12px rgba(20,30,60,.05) !important;
+    }
+
+    .header > * {
+      min-width: 0;
+    }
+
+    .brand {
+      display: flex !important;
+      align-items: center !important;
+      gap: 7px !important;
+      min-width: 0 !important;
+      flex: 1 1 auto !important;
+    }
+
+    .brand-text {
+      min-width: 0 !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+    }
+
+    .header-actions {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      gap: 6px !important;
+      flex: 0 0 auto !important;
+    }
+
+    /* Leave room for the fixed header on every app page. */
+    .app-view {
+      padding-top: 54px !important;
+      box-sizing: border-box !important;
+    }
+
+    .app-view .container {
+      padding-top: 0 !important;
+    }
+
+    #homeView {
+      padding-top: 54px !important;
+    }
+
+    /* Calculator/Archive containers should never become wider than the header. */
+    #calculatorView,
+    #archiveView,
+    #homeView {
+      width: 100% !important;
+      max-width: 520px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      box-sizing: border-box !important;
+    }
+
+    @media (max-width: 520px) {
+      .header {
+        width: 100% !important;
+      }
+    }
+
+    /* 2026 workflow and accessibility upgrade */
+    input, select, textarea, button { font-size: 16px; }
+    .input-label, .toggle-title { font-size: 13px; }
+    .icon-btn, .btn-remove { min-width: 44px; min-height: 44px; }
+    .header-actions { gap: 6px; }
+    .status-strip { display:flex; justify-content:space-between; gap:10px; align-items:center; margin:10px 0; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:var(--card); font-size:12px; color:var(--text-muted); }
+    .status-strip strong { color:var(--success); }
+    .validation-summary { display:none; margin:10px 0; padding:11px 12px; color:var(--danger); background:var(--danger-light); border:1px solid color-mix(in srgb,var(--danger) 35%,transparent); border-radius:12px; font-size:13px; line-height:1.5; }
+    .validation-summary.show { display:block; }
+    .field-error { border-color:var(--danger)!important; box-shadow:0 0 0 2px var(--danger-light)!important; }
+    .wizard-nav { display:grid; grid-template-columns:repeat(5,1fr); gap:5px; position:sticky; top:61px; z-index:8; padding:7px; margin:10px 0 14px; border:1px solid var(--border); border-radius:14px; background:color-mix(in srgb,var(--card) 92%,transparent); backdrop-filter:blur(14px); }
+    .wizard-step { border:0; background:transparent; color:var(--text-muted); padding:8px 3px; border-radius:9px; font-size:11px; font-weight:700; cursor:pointer; }
+    .wizard-step.active { background:var(--accent); color:#fff; }
+    .flow-section { scroll-margin-top:125px; }
+    .flow-section > .section-title { cursor:pointer; }
+    .section-help { font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:10px; }
+    .input-hint { display:block; margin-top:5px; font-size:12px; color:var(--text-muted); }
+    .explain-btn { border:0; background:transparent; color:var(--accent); font-size:12px; font-weight:700; cursor:pointer; padding:5px 0; }
+    .formula-details { display:none; margin:8px 0 0; padding:10px; border-radius:10px; background:var(--accent-light); color:var(--text-muted); font-size:12px; line-height:1.55; }
+    .formula-details.show { display:block; }
+    .result-dock { position:fixed; left:50%; bottom:73px; transform:translateX(-50%); width:min(500px,calc(100% - 20px)); z-index:20; display:none; align-items:center; justify-content:space-between; gap:10px; padding:9px 12px; border-radius:14px; background:color-mix(in srgb,var(--card) 94%,transparent); border:1px solid var(--border); box-shadow:var(--shadow-lg); backdrop-filter:blur(16px); }
+    .result-dock.show { display:flex; }
+    .result-dock strong { color:var(--accent); font-size:17px; }
+    .result-dock small { display:block; color:var(--text-muted); font-size:11px; }
+    .result-dock button { min-height:38px; padding:7px 11px; }
+    .sticky-actions { display:none!important; }
+    .result-dock-actions { display:flex; gap:6px; }
+    .advanced-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .archive-toolbar { display:grid; grid-template-columns:1.2fr .8fr .8fr; gap:7px; margin:12px 0; }
+    .archive-chart { width:100%; height:150px; margin:10px 0; border:1px solid var(--border); border-radius:12px; background:var(--bg); }
+    .unsaved-indicator { color:var(--warning); font-weight:700; }
+    .desktop-profile-copy { display:none; }
+    .monthly-cutoff-summary,.monthly-note { display:none; }
+    body.monthly-summary-mode .monthly-cutoff-summary { display:grid; grid-template-columns:1fr auto 1fr; gap:10px; align-items:center; margin-top:10px; }
+    body.monthly-summary-mode .monthly-note { display:block; margin-top:8px; padding:9px 11px; border-radius:10px; background:var(--accent-light); color:var(--text-muted); font-size:12px; line-height:1.45; }
+    .cutoff-summary-card { min-width:0; padding:12px; border:1px solid var(--border); border-radius:12px; background:var(--card); }
+    .cutoff-summary-card span,.cutoff-summary-card small { display:block; color:var(--text-muted); font-size:11px; }
+    .cutoff-summary-card strong { display:block; margin:3px 0; color:var(--accent); font-size:19px; font-variant-numeric:tabular-nums; }
+    .cutoff-plus { color:var(--text-muted); font-weight:900; }
+    body.monthly-summary-mode .desktop-workspace { display:none; }
+    @media(max-width:520px){
+      .wizard-step { font-size:0; }
+      .wizard-step::first-letter { font-size:13px; }
+      .advanced-grid,.archive-toolbar { grid-template-columns:1fr; }
+      body { padding-bottom:142px; }
+    }
+    @media (min-width: 900px) {
+      body { padding-bottom:32px; background:linear-gradient(135deg,var(--bg),color-mix(in srgb,var(--accent-light) 28%,var(--bg))); }
+      .header {
+        width:min(1180px,calc(100% - 190px))!important;
+        height:66px!important;
+        padding:10px 20px!important;
+        border:1px solid var(--border)!important;
+        border-top:0!important;
+        border-radius:0 0 18px 18px!important;
+      }
+      .brand { font-size:23px!important; }
+      .app-view { padding-top:88px!important; }
+      #calculatorView,#archiveView,#homeView {
+        width:calc(100% - 190px)!important;
+        max-width:1180px!important;
+        padding-left:0!important;
+        padding-right:0!important;
+      }
+      #homeView { max-width:1050px!important; }
+      .view-title { font-size:30px; letter-spacing:-.8px; }
+      .view-subtitle { font-size:15px; margin-bottom:14px; }
+      .status-strip { padding:12px 16px; margin:12px 0; }
+      .wizard-nav { top:76px; padding:8px; margin-bottom:20px; }
+      .wizard-step { padding:10px; font-size:13px; }
+      .desktop-overview { display:grid; grid-template-columns:minmax(0,.9fr) minmax(420px,1.1fr); gap:20px; align-items:stretch; margin-bottom:20px; }
+      .desktop-profile-panel,.desktop-result-panel { min-width:0; }
+      .desktop-profile-panel { display:flex; flex-direction:column; }
+      .desktop-profile-panel .card { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:stretch; gap:22px; }
+      .desktop-profile-panel .input-group { width:100%; }
+      .desktop-profile-copy { display:flex; flex-direction:column; gap:6px; }
+      .desktop-profile-copy strong { font-size:19px; color:var(--text); }
+      .desktop-profile-copy span { max-width:440px; color:var(--text-muted); font-size:13px; line-height:1.55; }
+      .desktop-result-panel { display:grid; grid-template-rows:auto 1fr; }
+      body.monthly-summary-mode .desktop-result-panel { grid-template-rows:auto auto auto auto; }
+      .desktop-result-panel .hero-card { margin:0; padding:24px 24px 20px; }
+      .hero-amount { font-size:46px; margin:8px 0 18px; }
+      .pill { padding:12px 14px; }
+      .pill-title { font-size:12px; }
+      .pill-value { font-size:17px; }
+      .desktop-workspace { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(360px,.75fr); gap:20px; align-items:start; }
+      .desktop-column { min-width:0; }
+      .desktop-column-summary { position:sticky; top:146px; }
+      .card { padding:20px; margin-bottom:16px; border-radius:18px; }
+      .section-title { font-size:12px; margin:18px 3px 8px; }
+      .input-grid,.advanced-grid { gap:14px; }
+      .input-group { margin-bottom:14px; }
+      .shift-row,.shift-header { grid-template-columns:minmax(180px,1.6fr) 100px 100px 48px; }
+      .toggle-row { padding:12px 0; }
+      .breakdown-row { padding:11px 0; }
+      .result-dock { display:none!important; }
+      .bottom-nav {
+        left:24px!important; right:auto!important; bottom:auto!important; top:50%!important;
+        transform:translateY(-50%)!important; width:92px!important; height:auto!important;
+        display:flex!important; padding:10px 8px!important; flex-direction:column!important; gap:7px!important;
+        border:1px solid var(--border)!important; border-radius:20px!important; box-shadow:var(--shadow-lg)!important;
+      }
+      .nav-item { width:100%!important; min-height:68px; border-radius:14px; font-size:11px; flex-direction:column; }
+      .nav-item.active { background:var(--accent-light); }
+      .nav-item .nav-icon { width:34px; height:34px; }
+      .archive-stat-grid { grid-template-columns:repeat(3,1fr); }
+      .archive-chart { height:220px; }
+      .archive-toolbar { grid-template-columns:1.5fr .75fr .75fr; }
+      .modal-card { max-width:520px; }
+    }
+    @media(max-width:520px){
+      body.monthly-summary-mode .monthly-cutoff-summary { grid-template-columns:1fr; }
+      body.monthly-summary-mode .cutoff-plus { text-align:center; line-height:1; }
+    }
+
+    .archive-deduction-editor { padding:14px; border:1px solid var(--border); border-radius:14px; background:var(--bg); }
+    .archive-form-section-title { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:10px; font-size:12px; font-weight:800; color:var(--text); }
+    .archive-form-section-title span { font-size:10px; font-weight:600; color:var(--text-muted); }
+    .archive-deduction-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .archive-deduction-breakdown { margin-top:12px; padding:12px; border:1px solid var(--border); border-radius:12px; background:var(--bg); }
+    .archive-deduction-heading,.archive-deduction-line { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .archive-deduction-heading { padding-bottom:8px; margin-bottom:5px; border-bottom:1px solid var(--border); font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; }
+    .archive-deduction-line { padding:5px 0; font-size:12px; color:var(--text-muted); }
+    .archive-deduction-heading strong,.archive-deduction-line strong { color:var(--danger); font-variant-numeric:tabular-nums; }
+    @media(max-width:520px){
+      .archive-deduction-grid { grid-template-columns:1fr 1fr; }
+      .archive-form-section-title { align-items:flex-start; flex-direction:column; gap:3px; }
+    }
+
+    /* Unified controls: the same components and navigation on every device. */
+    .icon-sprite { position:absolute; width:0; height:0; overflow:hidden; pointer-events:none; }
+    .btn-icon,.nav-icon svg,.icon-btn svg,.btn-remove svg,.archive-action svg,.wizard-step svg,.segmented-btn svg {
+      width:18px;
+      height:18px;
+      flex:0 0 18px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.8;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+      pointer-events:none;
+    }
+    .icon-btn svg { width:20px; height:20px; }
+    .btn-remove svg { width:18px; height:18px; }
+    .nav-icon svg { width:18px; height:18px; }
+    .wizard-step svg,.segmented-btn svg { width:16px; height:16px; flex-basis:16px; }
+    button {
+      min-height:44px;
+      border-radius:12px;
+      font-size:13.5px;
+      font-weight:750;
+      line-height:1.15;
+      touch-action:manipulation;
+    }
+    button:disabled { opacity:.5; cursor:not-allowed; transform:none!important; }
+    .btn,.btn-primary,.btn-success,.btn-secondary,.btn-add,.btn-compare,.btn-danger-sm,.home-cta {
+      min-height:44px;
+      border-radius:12px;
+      padding:10px 14px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      font-size:13.5px;
+      font-weight:750;
+      border:1px solid transparent;
+      box-shadow:none;
+      transition:background-color .16s var(--ease),border-color .16s var(--ease),color .16s var(--ease),transform .1s var(--ease),box-shadow .16s var(--ease);
+    }
+    .btn-primary,.home-cta { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .btn-success { background:var(--success); color:#fff; border-color:var(--success); }
+    .btn-secondary,.btn-secondary.btn,.btn-add,.btn-compare {
+      background:var(--card);
+      color:var(--accent);
+      border:1px solid var(--border);
+    }
+    .btn-danger-sm { background:var(--danger-light); color:var(--danger); border-color:color-mix(in srgb,var(--danger) 20%,transparent); }
+    .btn-add,.btn-compare { width:100%; }
+    .btn-add { border-style:solid; }
+    .btn:hover,.btn-primary:hover,.home-cta:hover { filter:none; box-shadow:0 6px 16px color-mix(in srgb,var(--accent) 22%,transparent); }
+    .btn-success:hover { filter:none; box-shadow:0 6px 16px color-mix(in srgb,var(--success) 22%,transparent); }
+    .btn-secondary:hover,.btn-add:hover,.btn-compare:hover { background:var(--accent-light); color:var(--accent); border-color:var(--accent); }
+    .btn-danger-sm:hover { background:var(--danger); color:#fff; border-color:var(--danger); }
+    .btn:active,.btn-primary:active,.btn-success:active,.btn-secondary:active,.btn-add:active,.btn-compare:active,.btn-danger-sm:active,.home-cta:active { transform:translateY(1px) scale(.985); }
+    .icon-btn {
+      width:44px!important;
+      height:44px!important;
+      min-width:44px;
+      min-height:44px;
+      border-radius:12px;
+      background:var(--card);
+      border:1px solid var(--border);
+      font-size:16px;
+    }
+    .icon-btn:hover { background:var(--accent-light); border-color:var(--accent); }
+    .btn-remove {
+      width:40px!important;
+      height:40px!important;
+      min-width:40px!important;
+      min-height:40px!important;
+      border-radius:10px!important;
+      border:1px solid color-mix(in srgb,var(--danger) 18%,transparent);
+      font-size:18px;
+    }
+    .archive-action {
+      min-height:36px;
+      padding:7px 10px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:var(--card);
+      font-size:12px;
+    }
+    .archive-action.delete { border-color:color-mix(in srgb,var(--danger) 20%,var(--border)); }
+    .segmented-control,.wizard-nav { padding:5px; gap:5px; border:1px solid var(--border); background:var(--card); border-radius:14px; }
+    .segmented-btn,.wizard-step {
+      min-height:42px;
+      padding:9px 8px!important;
+      border-radius:10px;
+      font-size:12px!important;
+      color:var(--text-muted);
+      background:transparent;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+    .segmented-btn:hover,.wizard-step:hover { background:var(--accent-light); color:var(--accent); }
+    .segmented-btn.active,.wizard-step.active { background:var(--accent); color:#fff; box-shadow:none; }
+    .profile-bar { gap:8px; align-items:stretch; }
+    .profile-bar select { min-height:44px; }
+    .result-dock { bottom:82px; width:min(620px,calc(100% - 24px)); padding:10px 12px; border-radius:16px; }
+    .result-dock button { min-height:42px; }
+    .bottom-nav {
+      position:fixed!important;
+      left:50%!important;
+      right:auto!important;
+      bottom:10px!important;
+      top:auto!important;
+      transform:translateX(-50%)!important;
+      width:min(620px,calc(100% - 24px))!important;
+      height:68px!important;
+      padding:6px!important;
+      display:grid!important;
+      grid-template-columns:repeat(3,1fr)!important;
+      gap:6px!important;
+      flex-direction:initial!important;
+      border:1px solid var(--border)!important;
+      border-radius:18px!important;
+      background:color-mix(in srgb,var(--card) 94%,transparent)!important;
+      box-shadow:var(--shadow-lg)!important;
+    }
+    .nav-item {
+      width:100%!important;
+      min-height:54px!important;
+      border-radius:13px!important;
+      flex-direction:row!important;
+      gap:7px!important;
+      font-size:12px!important;
+      color:var(--text-muted);
+    }
+    .nav-item .nav-icon { width:28px; height:28px; border-radius:8px; font-size:15px; }
+    .nav-item.active { color:var(--accent); background:var(--accent-light); }
+    .nav-item.active .nav-icon { background:transparent; }
+    body { padding-bottom:172px!important; }
+    @media(max-width:520px){
+      .wizard-step { font-size:8.5px!important; padding:6px 1px!important; flex-direction:column; gap:2px; min-width:0; }
+      .wizard-step svg { width:14px; height:14px; flex-basis:14px; }
+      .wizard-step span { max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+      .wizard-step::first-letter { font-size:inherit; }
+      .nav-item { flex-direction:column!important; gap:1px!important; font-size:10px!important; }
+      .nav-item .nav-icon { width:26px; height:26px; }
+      .profile-bar { display:grid; grid-template-columns:1fr 1fr 44px; }
+      .profile-bar select { min-width:0; grid-column:1/-1; }
+      .profile-bar .btn-secondary { width:100%; }
+    }
+    .explain-btn { display:inline-flex; align-items:center; gap:7px; min-height:40px; border-radius:10px; padding:7px 9px; }
+    @media(min-width:900px){
+      .header { width:min(1180px,calc(100% - 48px))!important; }
+      #calculatorView,#archiveView,#homeView { width:calc(100% - 48px)!important; }
+      .result-dock.show { display:flex!important; }
+      body { padding-bottom:172px!important; }
+    }
+</style>
+</head>
+<body>
+
+  <svg class="icon-sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 3h12l2 2v16H5z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v11h14V10M9 21v-7h6v7"/></symbol>
+    <symbol id="i-calculator" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8v4H8zM8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><path d="M3 6h18v15H3zM2 3h20v3M9 10h6"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 6h16a2 2 0 0 1 2 2v11H3zM3 6l2-3h13v3M16 12h5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 3v18l3-2 4 2 4-2 3 2V3l-3 2-4-2-4 2z"/><path d="M9 9h6M9 13h6"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6zM14 2v5h5M9 13h6M9 17h6"/></symbol>
+    <symbol id="i-compare" viewBox="0 0 24 24"><path d="M7 7h13M16 3l4 4-4 4M17 17H4M8 13l-4 4 4 4"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  </svg>
+
+  <div class="header">
+    <div class="brand">Sweldo<span>.</span></div>
+    <div class="header-actions">
+      <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme"><svg aria-hidden="true"><use href="#i-moon"/></svg></button>
+      <button class="icon-btn" id="payrollRulesBtn" title="Payroll rules" aria-label="Open payroll rules"><svg aria-hidden="true"><use href="#i-settings"/></svg></button>
+      <button class="icon-btn" id="resetBtn" title="Reset inputs" aria-label="Reset calculator inputs"><svg aria-hidden="true"><use href="#i-reset"/></svg></button>
+    </div>
+  </div>
+
+  <!-- Home View -->
+  <div class="container app-view active" id="homeView">
+    <div class="home-view">
+      <div class="home-hero">
+        <div class="home-logo">₱</div>
+        <div class="home-title">Welcome to <span>Sweldo.</span></div>
+        <div class="home-subtitle">
+          A simple Philippine salary calculator built to help you estimate your
+          take-home pay, track premiums, and keep your payroll history in one place.
+        </div>
+        <button class="home-cta" onclick="showView('calculator')">Start Calculating <svg class="btn-icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
+      </div>
+
+      <div class="home-features">
+        <div class="home-feature">
+          <div class="home-feature-icon">🧮</div>
+          <div class="home-feature-title">Salary Calculator</div>
+          <div class="home-feature-text">Estimate gross pay, deductions, and take-home salary.</div>
+        </div>
+        <div class="home-feature">
+          <div class="home-feature-icon">🌙</div>
+          <div class="home-feature-title">Shift & Premiums</div>
+          <div class="home-feature-text">Add shifts, night differential, overtime, rest days, and holidays.</div>
+        </div>
+        <div class="home-feature">
+          <div class="home-feature-icon">📁</div>
+          <div class="home-feature-title">Payslip Archive</div>
+          <div class="home-feature-text">Save previous payslips and monitor your salary over time.</div>
+        </div>
+        <div class="home-feature">
+          <div class="home-feature-icon">⚙️</div>
+          <div class="home-feature-title">Personalized</div>
+          <div class="home-feature-text">Save salary profiles and customize your calculator setup.</div>
+        </div>
+      </div>
+
+      <div class="home-tip">
+        <strong>Sweldo.</strong> Your salary, simplified. Use the calculator for estimates;
+        actual payroll may vary based on your employer's policies and payroll rules.
+      </div>
+    </div>
+  </div>
+
+  <div class="container app-view" id="calculatorView">
+
+    <div class="view-title">Salary Calculator</div>
+    <div class="view-subtitle">Estimate your Philippine payroll and take-home pay.</div>
+    <div class="status-strip"><span>Statutory rules: <strong>PH 2025+</strong></span><span id="saveStatus">All changes saved locally</span></div>
+    <div class="validation-summary" id="validationSummary" role="alert"></div>
+    <div class="wizard-nav" aria-label="Calculator sections">
+      <button class="wizard-step active" data-target="baseSection" onclick="goToStep(this)"><svg aria-hidden="true"><use href="#i-wallet"/></svg><span>Salary</span></button>
+      <button class="wizard-step" data-target="attendanceSection" onclick="goToStep(this)"><svg aria-hidden="true"><use href="#i-calendar"/></svg><span>Attendance</span></button>
+      <button class="wizard-step" data-target="premiumSection" onclick="goToStep(this)"><svg aria-hidden="true"><use href="#i-clock"/></svg><span>Premiums</span></button>
+      <button class="wizard-step" data-target="deductionSection" onclick="goToStep(this)"><svg aria-hidden="true"><use href="#i-receipt"/></svg><span>Deductions</span></button>
+      <button class="wizard-step" data-target="reviewSection" onclick="goToStep(this)"><svg aria-hidden="true"><use href="#i-list"/></svg><span>Review</span></button>
+    </div>
+
+    <div class="desktop-overview">
+    <div class="desktop-profile-panel">
+    <!-- Preset Profiles Manager Card -->
+    <div class="section-title">Saved Preset Profiles</div>
+    <div class="card">
+      <div class="desktop-profile-copy"><strong>Employee setup</strong><span>Switch profiles or save the current salary, schedule, premiums, and deductions as a reusable preset.</span></div>
+      <div class="input-group">
+        <div class="profile-bar">
+          <select id="profileSelect" onchange="loadSelectedProfile()">
+            <!-- Loaded via JS -->
+          </select>
+          <button class="btn-secondary" onclick="saveNewProfile()"><svg class="btn-icon" aria-hidden="true"><use href="#i-save"/></svg>Save</button>
+          <button class="btn-secondary" onclick="updateCurrentProfile()"><svg class="btn-icon" aria-hidden="true"><use href="#i-check"/></svg>Update</button>
+          <button class="btn-danger-sm" onclick="deleteCurrentProfile()" id="deleteProfileBtn" aria-label="Delete current employee profile" title="Delete profile"><svg class="btn-icon" aria-hidden="true"><use href="#i-trash"/></svg></button>
+        </div>
+      </div>
+    </div>
+    </div>
+
+
+    <!-- Pay Period Selection -->
+    <div class="desktop-result-panel">
+    <div class="segmented-control">
+      <button class="segmented-btn active" onclick="setPeriod('semi-1', this)"><svg aria-hidden="true"><use href="#i-calendar"/></svg><span>1st Cutoff</span></button>
+      <button class="segmented-btn" onclick="setPeriod('semi-2', this)"><svg aria-hidden="true"><use href="#i-calendar"/></svg><span>2nd Cutoff</span></button>
+      <button class="segmented-btn" onclick="setPeriod('monthly', this)"><svg aria-hidden="true"><use href="#i-receipt"/></svg><span>Monthly</span></button>
+    </div>
+
+    <!-- Take Home Hero Card -->
+    <div class="hero-card">
+      <div class="hero-label" id="periodDisplayLabel">Estimated Take-Home Pay (Semi-Monthly)</div>
+      <div class="hero-amount" id="netPayDisplay">₱0.00</div>
+      
+      <div class="summary-pills">
+        <div class="pill">
+          <div class="pill-title">Gross Earnings</div>
+          <div class="pill-value" id="grossDisplay">₱0.00</div>
+        </div>
+        <div class="pill">
+          <div class="pill-title">Total Deductions</div>
+          <div class="pill-value" style="color: var(--danger);" id="deductionDisplay">₱0.00</div>
+        </div>
+      </div>
+    </div>
+    <div class="monthly-cutoff-summary" id="monthlyCutoffSummary">
+      <div class="cutoff-summary-card"><span>First cutoff</span><strong id="monthlyFirstNet">₱0.00</strong><small id="monthlyFirstMeta">Gross ₱0.00 · Deductions ₱0.00</small></div>
+      <div class="cutoff-plus">+</div>
+      <div class="cutoff-summary-card"><span>Second cutoff</span><strong id="monthlySecondNet">₱0.00</strong><small id="monthlySecondMeta">Gross ₱0.00 · Deductions ₱0.00</small></div>
+    </div>
+    <div class="monthly-note" id="monthlyNote">Monthly total is the exact sum of your saved first and second cutoff estimates.</div>
+    </div>
+    </div>
+
+    <!-- Base Rates Card -->
+    <div class="desktop-workspace">
+    <div class="desktop-column desktop-column-inputs">
+    <div class="flow-section" id="baseSection"><div class="section-title">Base Salary & Schedule</div>
+    <div class="card">
+      <div class="input-grid">
+        <div class="input-group">
+          <label class="input-label">Monthly Salary</label>
+          <div class="input-wrapper">
+            <span class="currency-symbol">₱</span>
+            <input type="number" id="basicSalary" value="30000" min="0" step="100" oninput="calculate()">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Days / Month</label>
+          <input type="number" id="daysPerMonth" value="20" min="1" max="31" step="0.5" style="padding-left:8px;" oninput="calculate()">
+          <small class="input-hint">Paid working days used to derive daily pay.</small>
+        </div>
+      </div>
+      <div class="badge-info" id="hourlyRateDisplay">Daily Rate: ₱1,500.00 | Hourly: ₱187.50</div>
+    </div></div>
+
+    <!-- Shift Planner -->
+    <div class="flow-section" id="attendanceSection"><div class="section-title">Shifts Worked</div>
+    <div class="card">
+      <div class="shift-header">
+        <span>Shift Schedule</span>
+        <span>Days</span>
+        <span>ND Hrs</span>
+        <span></span>
+      </div>
+
+      <div id="shiftList"></div>
+      <button class="btn-add" onclick="addShift()"><svg class="btn-icon" aria-hidden="true"><use href="#i-plus"/></svg>Add Shift Row</button>
+
+      <div class="breakdown-row" style="margin-top: 8px; padding-top: 6px;">
+        <span>Days Worked:</span>
+        <span style="font-weight: 700;" id="totalDaysDisplay">10 / 10 Days</span>
+      </div>
+      <div class="breakdown-row">
+        <span>Night Diff Bonus:</span>
+        <span style="font-weight: 700; color: var(--success);" id="nightDiffDisplay">₱0.00</span>
+      </div>
+    </div></div>
+
+    <!-- Overtime Pay Inputs -->
+    <div class="flow-section" id="premiumSection"><div class="section-title">Overtime & Rest Day</div>
+    <div class="card">
+      <div class="input-grid">
+        <div class="input-group">
+          <label class="input-label">Regular OT (Hrs)</label>
+          <input type="number" id="regularOtHrs" min="0" max="200" step="0.25" placeholder="0" style="padding-left:8px;" oninput="calculate()">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Rest Days Worked</label>
+          <input type="number" id="restDaysWorked" min="0" max="31" step="0.5" placeholder="0" style="padding-left:8px;" oninput="calculate()">
+        </div>
+      </div>
+      <div class="input-group" style="margin-top: 6px;">
+        <label class="input-label">Rest Day OT (Hrs)</label>
+        <input type="number" id="restDayOtHrs" min="0" max="200" step="0.25" placeholder="0" style="padding-left:8px;" oninput="calculate()">
+      </div>
+    </div>
+
+    <div class="section-title">Allowances, Adjustments & Bonuses</div>
+    <div class="card">
+      <div class="advanced-grid">
+        <div class="input-group"><label class="input-label">Taxable Allowances</label><div class="input-wrapper"><span class="currency-symbol">₱</span><input id="taxableAllowances" type="number" min="0" step="1" placeholder="0" oninput="calculate()"></div></div>
+        <div class="input-group"><label class="input-label">Non-taxable Allowances</label><div class="input-wrapper"><span class="currency-symbol">₱</span><input id="nonTaxableAllowances" type="number" min="0" step="1" placeholder="0" oninput="calculate()"></div></div>
+        <div class="input-group"><label class="input-label">Commission / Bonus</label><div class="input-wrapper"><span class="currency-symbol">₱</span><input id="supplementaryPay" type="number" min="0" step="1" placeholder="0" oninput="calculate()"></div></div>
+        <div class="input-group"><label class="input-label">13th Month / Other Benefits</label><div class="input-wrapper"><span class="currency-symbol">₱</span><input id="thirteenthMonth" type="number" min="0" step="1" placeholder="0" oninput="calculate()"></div><small class="input-hint">Tracks the annual ₱90,000 exemption ceiling.</small></div>
+        <div class="input-group"><label class="input-label">Unpaid Absence (Days)</label><input id="absenceDays" type="number" min="0" max="31" step="0.5" placeholder="0" oninput="calculate()"></div>
+        <div class="input-group"><label class="input-label">Late / Undertime (Hours)</label><input id="undertimeHours" type="number" min="0" max="200" step="0.25" placeholder="0" oninput="calculate()"></div>
+      </div>
+    </div></div>
+
+
+    <!-- Holiday Work -->
+    <div class="holiday-section">
+    <div class="section-title section-head">
+      <span>Holiday Work</span>
+      <span class="section-badge">Premium Pay</span>
+    </div>
+    <div class="card">
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:9px;line-height:1.5;">
+        Add holidays you actually worked. The normal daily pay remains in Basic Earned;
+        only the holiday premium is added here.
+      </div>
+
+      <div class="holiday-row">
+        <select id="holidayType" onchange="updateHolidayRateLabel()">
+          <option value="special">Special Holiday</option>
+          <option value="regular">Regular Holiday</option>
+        </select>
+        <input type="number" id="holidayDays" min="0" step="0.5" placeholder="Days" style="padding-left:8px;">
+        <button class="btn-secondary" onclick="addHoliday()"><svg class="btn-icon" aria-hidden="true"><use href="#i-plus"/></svg>Add</button>
+      </div>
+
+      <div id="holidayList"></div>
+
+      <div class="holiday-summary">
+        <span>Special: <strong id="specialHolidayDays">0</strong> day(s)</span>
+        <span>Regular: <strong id="regularHolidayDays">0</strong> day(s)</span>
+        <span style="font-weight:700;color:var(--warning)" id="holidayPremiumDisplay">₱0.00</span>
+      </div>
+    </div>
+    </div>
+
+    </div>
+    <div class="desktop-column desktop-column-summary">
+
+    <!-- Deduction Controls (Toggles) -->
+    <div class="flow-section" id="deductionSection"><div class="section-title">Deductions</div>
+    <div class="card">
+      <div class="toggle-row">
+        <span class="toggle-title">SSS Contribution</span>
+        <label class="switch">
+          <input type="checkbox" id="incGov" checked onchange="calculate()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <span class="toggle-title">PhilHealth</span>
+        <label class="switch">
+          <input type="checkbox" id="incPhilhealth" checked onchange="calculate()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <span class="toggle-title">Pag-IBIG</span>
+        <label class="switch">
+          <input type="checkbox" id="incPagibig" checked onchange="calculate()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <span class="toggle-title">Withholding Tax</span>
+        <label class="switch">
+          <input type="checkbox" id="incTax" checked onchange="calculate()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="input-group" style="margin-top: 8px;">
+        <label class="input-label">Company / Other Deductions</label>
+        <div class="input-wrapper">
+          <span class="currency-symbol">₱</span>
+          <input type="number" id="otherDeductions" placeholder="0" oninput="calculate()">
+        </div>
+      </div>
+      <div class="advanced-grid" style="margin-top:10px">
+        <div class="input-group"><label class="input-label">SSS Loan</label><div class="input-wrapper"><span class="currency-symbol">₱</span><input id="sssLoan" type="number" min="0" step="1" placeholder="0" oninput="calculate()"></div></div>
+        <div class="input-group"><label class="input-label">Pag-IBIG Loan</label><div class="input-wrapper"><span class="currency-symbol">₱</span><input id="pagibigLoan" type="number" min="0" step="1" placeholder="0" oninput="calculate()"></div></div>
+      </div>
+      <small class="input-hint">Deduction amounts apply to the selected payroll period.</small>
+    </div></div>
+
+    <!-- Itemized Breakdown -->
+    <div class="flow-section" id="reviewSection"><div class="section-title">Itemized Breakdown</div>
+    <div class="card">
+      <div class="breakdown-row">
+        <span>Basic Earned</span>
+        <span style="font-weight:600;" id="valBasicEarned">₱0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span>Night Diff</span>
+        <span style="font-weight:600; color:var(--success);" id="valNDBreakdown">₱0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span>Overtime & Rest Day Pay</span>
+        <span style="font-weight:600; color:var(--success);" id="valOTBreakdown">₱0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span>Holiday Premium <small style="color:var(--text-muted)">(+30% / +100%)</small></span>
+        <span style="font-weight:600; color:var(--warning);" id="valHolidayBreakdown">₱0.00</span>
+      </div>
+      <div class="breakdown-row" id="rowGov">
+        <span>SSS Contribution</span>
+        <span class="deduction-val" id="valGov">−₱0.00</span>
+      </div>
+      <div class="breakdown-row" id="rowPhilhealth">
+        <span>PhilHealth</span>
+        <span class="deduction-val" id="valPhilhealth">−₱0.00</span>
+      </div>
+      <div class="breakdown-row" id="rowPagibig">
+        <span>Pag-IBIG</span>
+        <span class="deduction-val" id="valPagibig">−₱0.00</span>
+      </div>
+      <div class="breakdown-row" id="rowTax">
+        <span>Withholding Tax</span>
+        <span class="deduction-val" id="valTax">−₱0.00</span>
+      </div>
+      <div class="breakdown-row" id="rowOther">
+        <span>Other Deductions</span>
+        <span class="deduction-val" id="valOther">−₱0.00</span>
+      </div>
+      <button class="explain-btn" type="button" onclick="toggleFormulaDetails()"><svg class="btn-icon" aria-hidden="true"><use href="#i-info"/></svg>How was this calculated?</button>
+      <div class="formula-details" id="formulaDetails"></div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+  </div>
+
+  <!-- Hidden Canvas for Graphics Generation -->
+  <canvas id="summaryCanvas" style="display:none;"></canvas>
+
+
+  
+  <!-- Payroll Rules Modal -->
+  <div class="modal-overlay" id="payrollRulesModal">
+    <div class="modal-card formula-modal-card">
+      <h3 style="font-size:17px;font-weight:800;">Payroll Rules</h3>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.5;margin:4px 0 12px;">
+        Set the rates used by your company. No formulas or coding required.
+      </div>
+      <div class="input-group" style="text-align:left;">
+        <label class="input-label">Company / Payroll Profile</label>
+        <div style="display:flex;gap:7px;">
+          <select id="payrollRulesProfile" style="flex:1;" onchange="loadPayrollRuleProfile()"></select>
+          <button class="btn-secondary" onclick="savePayrollRuleProfile()"><svg class="btn-icon" aria-hidden="true"><use href="#i-plus"/></svg>Save As</button>
+        </div>
+      </div>
+      <div class="formula-grid">
+        <div><label class="input-label">Regular Overtime</label><div class="rate-input"><input id="ruleRegularOt" type="number" min="0" step="0.01"><span>%</span></div></div>
+        <div><label class="input-label">Night Differential</label><div class="rate-input"><input id="ruleNightDiff" type="number" min="0" step="0.001" value="6.625" inputmode="decimal"><span>%</span></div></div>
+        <div><label class="input-label">Rest Day</label><div class="rate-input"><input id="ruleRestDay" type="number" min="0" step="0.01"><span>%</span></div></div>
+        <div><label class="input-label">Rest Day OT</label><div class="rate-input"><input id="ruleRestOt" type="number" min="0" step="0.01"><span>%</span></div></div>
+        <div><label class="input-label">Special Holiday</label><div class="rate-input"><input id="ruleSpecialHoliday" type="number" min="0" step="0.01"><span>% total</span></div></div>
+        <div><label class="input-label">Regular Holiday</label><div class="rate-input"><input id="ruleRegularHoliday" type="number" min="0" step="0.01"><span>% total</span></div></div>
+        <div><label class="input-label">Hours Per Workday</label><div class="rate-input"><input id="ruleHoursPerDay" type="number" min="0.1" step="0.1"><span>hrs</span></div></div>
+      </div>
+      <div class="developer-warning" style="margin-top:10px;">
+        Example: if your company pays 150% for regular overtime, enter <strong>150</strong>.
+        Changes apply immediately after you press Apply Rules.
+      </div>
+      <div class="archive-modal-actions">
+        <button class="btn btn-secondary" onclick="resetPayrollRules()"><svg class="btn-icon" aria-hidden="true"><use href="#i-reset"/></svg>Reset</button>
+        <button class="btn btn-primary" onclick="savePayrollRules()"><svg class="btn-icon" aria-hidden="true"><use href="#i-check"/></svg>Apply Rules</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payroll Archive Modal -->
+  <div class="modal-overlay archive-modal" id="archiveModal">
+    <div class="modal-card">
+      <button type="button" class="archive-modal-close" onclick="closeArchiveModal()" aria-label="Close payroll editor"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+      <h3 id="archiveModalTitle">Add Previous Payroll</h3>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">Save an old payslip/payroll result for future salary monitoring.</div>
+      <div class="archive-form-grid">
+        <div><label for="archiveDate">Payroll Date</label><input type="date" id="archiveDate"></div>
+        <div><label for="archiveStart">Period Start</label><input type="date" id="archiveStart"></div>
+        <div><label for="archiveEnd">Period End</label><input type="date" id="archiveEnd"></div>
+        <div><label for="archiveEmployer">Employer / Profile</label><input type="text" id="archiveEmployer" maxlength="80" placeholder="Optional"></div>
+        <div><label for="archivePeriod">Pay Period</label><select id="archivePeriod"><option>Semi-Monthly</option><option>Monthly</option><option>Other</option></select></div>
+        <div><label for="archiveGross">Gross Pay</label><input type="number" id="archiveGross" min="0" step="0.01" placeholder="0.00"></div>
+        <div><label for="archiveDeductions">Total Deductions</label><input type="number" id="archiveDeductions" min="0" step="0.01" placeholder="0.00"></div>
+        <div><label for="archiveNet">Take-Home Pay</label><input type="number" id="archiveNet" min="0" step="0.01" placeholder="0.00"></div>
+        <div><label for="archiveSalary">Monthly Basic Salary</label><input type="number" id="archiveSalary" min="0" step="0.01" placeholder="Optional"></div>
+        <div class="archive-form-full archive-deduction-editor">
+          <div class="archive-form-section-title">Deduction breakdown <span>Optional for manually entered payslips</span></div>
+          <div class="archive-deduction-grid">
+            <div><label for="archiveSSS">SSS</label><input type="number" id="archiveSSS" min="0" step="0.01" placeholder="0.00" oninput="updateArchiveDeductionTotal()"></div>
+            <div><label for="archivePhilHealth">PhilHealth</label><input type="number" id="archivePhilHealth" min="0" step="0.01" placeholder="0.00" oninput="updateArchiveDeductionTotal()"></div>
+            <div><label for="archivePagibig">Pag-IBIG</label><input type="number" id="archivePagibig" min="0" step="0.01" placeholder="0.00" oninput="updateArchiveDeductionTotal()"></div>
+            <div><label for="archiveTax">Withholding Tax</label><input type="number" id="archiveTax" min="0" step="0.01" placeholder="0.00" oninput="updateArchiveDeductionTotal()"></div>
+            <div><label for="archiveOtherDeduction">Other / Loans</label><input type="number" id="archiveOtherDeduction" min="0" step="0.01" placeholder="0.00" oninput="updateArchiveDeductionTotal()"></div>
+          </div>
+        </div>
+        <div class="archive-form-full"><label for="archiveTags">Tags</label><input type="text" id="archiveTags" maxlength="120" placeholder="night shift, bonus, adjustment"></div>
+        <div class="archive-form-full"><label for="archiveNote">Note</label><textarea id="archiveNote" maxlength="500" placeholder="e.g. August 1–15 payroll, night shift, bonus included..."></textarea></div>
+      </div>
+      <div class="archive-modal-actions">
+        <button class="btn btn-secondary" onclick="closeArchiveModal()"><svg class="btn-icon" aria-hidden="true"><use href="#i-x"/></svg>Cancel</button>
+        <button class="btn btn-primary" onclick="saveArchiveRecord()"><svg class="btn-icon" aria-hidden="true"><use href="#i-save"/></svg>Save Payroll</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div class="modal-overlay" id="exportModal">
+    <div class="modal-card">
+      <div style="font-weight:800; font-size:16px; margin-bottom: 5px;">Summary Image Ready</div>
+      <div style="font-size:11.5px; color: var(--text-muted); line-height:1.5;">Tap Download or press &amp; hold image to Save to Photos</div>
+      <img id="modalImagePreview" alt="Estimated Payroll Graphic">
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary" onclick="closeExportModal()"><svg class="btn-icon" aria-hidden="true"><use href="#i-x"/></svg>Close</button>
+        <a id="downloadImgBtn" download="Estimated_Payroll.png" class="btn btn-primary" style="text-decoration:none;"><svg class="btn-icon" aria-hidden="true"><use href="#i-download"/></svg>Download Image</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compare Modal -->
+  <div class="modal-overlay" id="compareModal">
+    <div class="modal-card compare-modal-card">
+      <div style="font-weight:800; font-size:16px; margin-bottom: 4px;">Compare Payroll</div>
+      <div style="font-size:11.5px; color: var(--text-muted); line-height:1.5; margin-bottom:12px;">
+        See how your current calculator estimate stacks up against a payroll you've saved.
+      </div>
+
+      <div class="input-group" style="text-align:left;">
+        <label class="input-label" for="compareSelect">Compare current estimate against</label>
+        <select id="compareSelect" onchange="renderComparison()"></select>
+      </div>
+
+      <div id="compareEmptyState" class="archive-empty" style="display:none;">
+        <div style="font-size:26px;margin-bottom:6px;opacity:.5;">⇄</div>
+        No saved payrolls yet.<br>Save one from the Archive tab first.
+      </div>
+
+      <div id="compareBody">
+        <div class="compare-table">
+          <div class="compare-header-row">
+            <span></span><span>Now</span><span>Saved</span><span>Change</span>
+          </div>
+          <div class="compare-row">
+            <span class="compare-label">Gross Pay</span>
+            <span id="cmpGrossNow">₱0.00</span>
+            <span id="cmpGrossSaved">₱0.00</span>
+            <span id="cmpGrossDiff" class="compare-diff neutral">—</span>
+          </div>
+          <div class="compare-row">
+            <span class="compare-label">Deductions</span>
+            <span id="cmpDeductNow">₱0.00</span>
+            <span id="cmpDeductSaved">₱0.00</span>
+            <span id="cmpDeductDiff" class="compare-diff neutral">—</span>
+          </div>
+          <div class="compare-row compare-row-highlight">
+            <span class="compare-label">Take-Home</span>
+            <span id="cmpNetNow">₱0.00</span>
+            <span id="cmpNetSaved">₱0.00</span>
+            <span id="cmpNetDiff" class="compare-diff neutral">—</span>
+          </div>
+        </div>
+        <div id="compareSummaryNote" class="compare-note"></div>
+      </div>
+
+      <div class="archive-modal-actions">
+        <button class="btn btn-secondary" onclick="closeCompareModal()"><svg class="btn-icon" aria-hidden="true"><use href="#i-x"/></svg>Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-item active" data-view="home" onclick="showView('home')">
+      <span class="nav-icon"><svg aria-hidden="true"><use href="#i-home"/></svg></span>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" data-view="calculator" onclick="showView('calculator')">
+      <span class="nav-icon"><svg aria-hidden="true"><use href="#i-calculator"/></svg></span>
+      <span>Calculator</span>
+    </button>
+    <button class="nav-item" data-view="archive" onclick="showView('archive')">
+      <span class="nav-icon"><svg aria-hidden="true"><use href="#i-archive"/></svg></span>
+      <span>Archive</span>
+    </button>
+  </nav>
+
+  <!-- Sticky Actions -->
+  <div class="sticky-actions" style="display:none;">
+    <button class="btn btn-primary" onclick="document.getElementById('reviewSection').scrollIntoView({behavior:'smooth'})"><svg class="btn-icon" aria-hidden="true"><use href="#i-list"/></svg>Review Breakdown</button>
+    <button class="btn btn-success" onclick="generateSummaryGraphic()"><svg class="btn-icon" aria-hidden="true"><use href="#i-image"/></svg>Estimate Payslip</button>
+  </div>
+
+  <div class="result-dock" id="resultDock">
+    <div onclick="document.getElementById('reviewSection').scrollIntoView({behavior:'smooth'})" style="cursor:pointer"><small>Estimated take-home</small><strong id="dockNet">₱0.00</strong><small id="dockMeta">Gross ₱0 · Deductions ₱0</small></div>
+    <div class="result-dock-actions"><button class="btn btn-secondary" onclick="generateSummaryGraphic()"><svg class="btn-icon" aria-hidden="true"><use href="#i-image"/></svg>Payslip</button><button class="btn btn-primary" onclick="saveCurrentPayrollToArchive()"><svg class="btn-icon" aria-hidden="true"><use href="#i-save"/></svg>Save</button></div>
+  </div>
+
+  <!-- Payroll Archive View -->
+  <div class="container app-view" id="archiveView">
+    <div class="view-title">Payroll Archive</div>
+    <div class="view-subtitle">Keep a history of your previous pay and monitor your take-home salary.</div>
+    <!-- Payroll Archive -->
+    <div class="section-title section-head">
+      <span>Payroll Archive</span>
+      <div class="archive-actions">
+        <span class="section-badge" id="archiveCountBadge">0 saved</span>
+        <button class="btn-secondary" onclick="openArchiveModal()"><svg class="btn-icon" aria-hidden="true"><use href="#i-plus"/></svg>Add</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="archive-stat-grid">
+        <div class="archive-stat"><span>Records</span><strong id="archiveRecords">0</strong></div>
+        <div class="archive-stat"><span>Average Net</span><strong id="archiveAverage">₱0.00</strong></div>
+        <div class="archive-stat"><span>Latest Net</span><strong id="archiveLatest">₱0.00</strong></div>
+      </div>
+      <button class="btn-compare" onclick="openCompareModal()"><svg class="btn-icon" aria-hidden="true"><use href="#i-compare"/></svg>Compare Estimate vs. Saved Payslip</button>
+      <div class="archive-toolbar">
+        <input id="archiveSearch" type="search" placeholder="Search notes, tags, employer" oninput="renderPayrollArchive()">
+        <select id="archiveYearFilter" onchange="renderPayrollArchive()"><option value="">All years</option></select>
+        <select id="archiveProfileFilter" onchange="renderPayrollArchive()"><option value="">All profiles</option></select>
+      </div>
+      <canvas id="archiveTrendChart" class="archive-chart" width="480" height="150" aria-label="Net pay trend chart"></canvas>
+      <div class="backup-card-actions">
+        <button class="btn-secondary" onclick="exportSweldoBackup()"><svg class="btn-icon" aria-hidden="true"><use href="#i-download"/></svg>Export Backup</button>
+        <button class="btn-secondary" onclick="document.getElementById('sweldoImportFile').click()"><svg class="btn-icon" aria-hidden="true"><use href="#i-upload"/></svg>Import Backup</button>
+        <button class="btn-secondary" onclick="exportArchiveCsv()"><svg class="btn-icon" aria-hidden="true"><use href="#i-file"/></svg>CSV Export</button>
+      </div>
+      <input type="file" id="sweldoImportFile" accept=".json,application/json" style="display:none" onchange="importSweldoBackup(event)">
+      <div id="archiveList" class="archive-list"></div>
+      <button class="btn-add" onclick="saveCurrentPayrollToArchive()"><svg class="btn-icon" aria-hidden="true"><use href="#i-save"/></svg>Save Current Payslip</button>
+    </div>
+
+
+  </div>
+
+
+  <script>
+
+    function showView(view) {
+      const views = {
+        home: document.getElementById('homeView'),
+        calculator: document.getElementById('calculatorView'),
+        archive: document.getElementById('archiveView')
+      };
+
+      Object.keys(views).forEach(key => {
+        views[key].classList.toggle('active', key === view);
+      });
+
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+      });
+
+      const sticky = document.querySelector('.sticky-actions');
+      if (sticky) sticky.style.display = view === 'calculator' ? 'flex' : 'none';
+      const dock = document.getElementById('resultDock');
+      if (dock) dock.classList.toggle('show', view === 'calculator');
+      localStorage.setItem('sweldo_last_view',view);
+
+      if (view === 'archive') renderPayrollArchive();
+      if (view === 'calculator') calculate();
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+
+    let currentPeriod = localStorage.getItem('sweldo_period') || 'semi-1';
+    const fmt = (num) => '₱' + (num || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function setPeriod(period, btn) {
+      if (currentPeriod === 'semi-1' || currentPeriod === 'semi-2') saveCurrentCutoffDraft();
+      currentPeriod = period;
+      localStorage.setItem('sweldo_period', period);
+      syncPeriodUI();
+      if (period === 'semi-1' || period === 'semi-2') loadCutoffDraft(period);
+      else calculate();
+    }
+
+    const PERIOD_DRAFTS_KEY='sweldo_cutoff_drafts_v1';
+    let restoringCutoffDraft=false;
+    function activeEmployeeName(){return document.getElementById('profileSelect')?.value||localStorage.getItem(ACTIVE_KEY)||'Default Profile';}
+    function getAllCutoffDrafts(){try{const d=JSON.parse(localStorage.getItem(PERIOD_DRAFTS_KEY)||'{}');return d&&typeof d==='object'?d:{};}catch(e){return {};}}
+    function getProfileCutoffDrafts(){const all=getAllCutoffDrafts();return all[activeEmployeeName()]||{};}
+    function saveCurrentCutoffDraft(){
+      if(restoringCutoffDraft||!['semi-1','semi-2'].includes(currentPeriod))return;
+      const all=getAllCutoffDrafts(),name=activeEmployeeName();all[name]=all[name]||{};
+      all[name][currentPeriod]={state:{...captureCurrentFormState(),period:currentPeriod},result:window.currentPayrollResult?{...window.currentPayrollResult,errors:[]}:null,updatedAt:new Date().toISOString()};
+      localStorage.setItem(PERIOD_DRAFTS_KEY,JSON.stringify(all));
+    }
+    function loadCutoffDraft(period){
+      const draft=getProfileCutoffDrafts()[period];
+      if(!draft?.state){calculate();saveCurrentCutoffDraft();return;}
+      restoringCutoffDraft=true;populateForm({...draft.state,period});restoringCutoffDraft=false;calculate();
+    }
+
+    function handleShiftChange(selectElem) {
+      const row = selectElem.parentElement;
+      const daysInput = row.querySelector('.shift-days');
+      const ndInput = row.querySelector('.shift-nd-hrs');
+      const isOff = selectElem.value === 'off';
+      if (isOff) { daysInput.value = 0; ndInput.value = 0; }
+      else if (selectElem.value === 'night') ndInput.value = 8;
+      else if (selectElem.value === 'morning' || selectElem.value === 'afternoon') ndInput.value = 0;
+      daysInput.disabled = isOff;
+      ndInput.disabled = isOff;
+      calculate();
+    }
+
+    function addShift(type = 'morning', days = 0, nd = 0) {
+      const shiftList = document.getElementById('shiftList');
+      const div = document.createElement('div');
+      div.className = 'shift-row';
+      div.innerHTML = `
+        <select class="shift-type" onchange="handleShiftChange(this)">
+          <option value="morning" ${type === 'morning' ? 'selected' : ''}>6 AM–2 PM</option>
+          <option value="afternoon" ${type === 'afternoon' ? 'selected' : ''}>2 PM–10 PM</option>
+          <option value="night" ${type === 'night' ? 'selected' : ''}>10 PM–6 AM</option>
+          <option value="off" ${type === 'off' ? 'selected' : ''}>Off</option>
+          <option value="custom" ${type === 'custom' ? 'selected' : ''}>Custom</option>
+        </select>
+        <input type="number" class="shift-days" min="0" max="31" step="0.5" value="${days}" placeholder="Days" aria-label="Days worked" style="padding-left:6px;" oninput="calculate()">
+        <input type="number" class="shift-nd-hrs" min="0" max="24" step="0.25" value="${nd}" placeholder="ND" aria-label="Night differential hours per day" style="padding-left:6px;" oninput="calculate()">
+        <button class="btn-remove" aria-label="Remove shift row" title="Remove shift" onclick="removeShift(this)">${iconSvg('x')}</button>
+      `;
+      shiftList.appendChild(div);
+      if (type === 'off') {
+        div.querySelector('.shift-days').value = 0;
+        div.querySelector('.shift-nd-hrs').value = 0;
+        div.querySelector('.shift-days').disabled = true;
+        div.querySelector('.shift-nd-hrs').disabled = true;
+      }
+      calculate();
+    }
+
+    function removeShift(btn) {
+      btn.parentElement.remove();
+      calculate();
+    }
+
+
+    // Holiday work
+    // Special non-working holiday: +30% premium on top of the normal daily pay.
+    // Regular holiday: +100% premium on top of the normal daily pay.
+    // This avoids double-counting the normal daily pay already included in Basic Earned.
+    let holidays = [];
+
+    function updateHolidayRateLabel() {
+      const type = document.getElementById('holidayType').value;
+      const input = document.getElementById('holidayDays');
+      input.placeholder = type === 'special' ? 'Days • +30%' : 'Days • +100%';
+    }
+
+    function addHoliday(type = null, days = 1) {
+      const selectedType = type || document.getElementById('holidayType').value;
+      const enteredDays = type ? days : (parseFloat(document.getElementById('holidayDays').value) || 0);
+
+      if (enteredDays <= 0) return;
+
+      holidays.push({
+        type: selectedType,
+        days: enteredDays
+      });
+
+      if (!type) document.getElementById('holidayDays').value = '';
+      renderHolidays();
+      calculate();
+    }
+
+    function removeHoliday(index) {
+      holidays.splice(index, 1);
+      renderHolidays();
+      calculate();
+    }
+
+    function renderHolidays() {
+      const list = document.getElementById('holidayList');
+
+      if (!holidays.length) {
+        list.innerHTML = '<div class="holiday-empty">🎉 No holiday work added yet.</div>';
+      } else {
+        list.innerHTML = holidays.map((h, index) => {
+          const isSpecial = h.type === 'special';
+          const label = isSpecial ? 'Special Holiday' : 'Regular Holiday';
+          const rate = isSpecial ? '+30%' : '+100%';
+          return `
+            <div class="holiday-row">
+              <div>
+                <div style="font-size:11px;font-weight:700;">${label}</div>
+                <span class="holiday-rate">${rate} premium</span>
+              </div>
+              <input type="number" min="0" step="0.5" value="${h.days}"
+                     onchange="updateHoliday(${index}, this.value)"
+                     style="padding-left:8px;">
+              <button class="btn-remove" aria-label="Remove holiday" title="Remove holiday" onclick="removeHoliday(${index})">${iconSvg('x')}</button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const specialDays = holidays.filter(h => h.type === 'special')
+        .reduce((sum, h) => sum + h.days, 0);
+      const regularDays = holidays.filter(h => h.type === 'regular')
+        .reduce((sum, h) => sum + h.days, 0);
+
+      document.getElementById('specialHolidayDays').textContent = specialDays;
+      document.getElementById('regularHolidayDays').textContent = regularDays;
+    }
+
+    function updateHoliday(index, value) {
+      holidays[index].days = Math.max(0, parseFloat(value) || 0);
+      renderHolidays();
+      calculate();
+    }
+
+    function getHolidayPremium(dailyRate) {
+      const rules = getActivePayrollRules();
+      return holidays.reduce((total, h) => {
+        const totalRate = (h.type === 'regular' ? rules.regularHoliday : rules.specialHoliday) / 100;
+        const premiumOnlyRate = Math.max(0, totalRate - 1);
+        return total + (h.days * dailyRate * premiumOnlyRate);
+      }, 0);
+    }
+
+    function renderDefaultShifts() {
+      const shiftList = document.getElementById('shiftList');
+      shiftList.innerHTML = '';
+      addShift('morning', 5, 0);
+      addShift('afternoon', 0, 0);
+      addShift('night', 5, 8);
+    }
+
+    // MULTIPLE PROFILES PERSISTENCE
+    const STORAGE_KEY = 'sweldo_saved_profiles';
+    const ACTIVE_KEY = 'sweldo_active_profile';
+
+    function getProfiles() {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if (!data) {
+        return {
+          "Default Profile": {
+            salary: 30000, days: 20,
+            shifts: [{ type: 'morning', days: 5, nd: 0 }, { type: 'afternoon', days: 0, nd: 0 }, { type: 'night', days: 5, nd: 8 }],
+            otHrs: 0, restDays: 0, restOtHrs: 0,
+            holidays: [],
+            incGov: true, incPhil: true, incPagibig: true, incTax: true, otherDeductions: 0
+          }
+        };
+      }
+      return JSON.parse(data);
+    }
+
+    function saveProfilesToStorage(profiles) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+    }
+
+    function captureCurrentFormState() {
+      const shifts = [];
+      document.querySelectorAll('.shift-row').forEach(row => {
+        shifts.push({
+          type: row.querySelector('.shift-type').value,
+          days: parseFloat(row.querySelector('.shift-days').value) || 0,
+          nd: parseFloat(row.querySelector('.shift-nd-hrs').value) || 0
+        });
+      });
+
+      return {
+        salary: parseFloat(document.getElementById('basicSalary').value) || 0,
+        days: parseFloat(document.getElementById('daysPerMonth').value) || 20,
+        shifts: shifts,
+        otHrs: parseFloat(document.getElementById('regularOtHrs').value) || 0,
+        restDays: parseFloat(document.getElementById('restDaysWorked').value) || 0,
+        restOtHrs: parseFloat(document.getElementById('restDayOtHrs').value) || 0,
+        holidays: holidays.map(h => ({ type: h.type, days: h.days })),
+        incGov: document.getElementById('incGov').checked,
+        incPhil: document.getElementById('incPhilhealth').checked,
+        incPagibig: document.getElementById('incPagibig').checked,
+        incTax: document.getElementById('incTax').checked,
+        otherDeductions: parseFloat(document.getElementById('otherDeductions').value) || 0,
+        taxableAllowances: valueOf('taxableAllowances'), nonTaxableAllowances: valueOf('nonTaxableAllowances'),
+        supplementaryPay: valueOf('supplementaryPay'), thirteenthMonth: valueOf('thirteenthMonth'),
+        absenceDays: valueOf('absenceDays'), undertimeHours: valueOf('undertimeHours'),
+        sssLoan: valueOf('sssLoan'), pagibigLoan: valueOf('pagibigLoan'), period: currentPeriod
+      };
+    }
+
+    function populateForm(state) {
+      document.getElementById('basicSalary').value = state.salary ?? 30000;
+      document.getElementById('daysPerMonth').value = state.days ?? 20;
+
+      const shiftList = document.getElementById('shiftList');
+      shiftList.innerHTML = '';
+      if (state.shifts && state.shifts.length > 0) {
+        state.shifts.forEach(s => addShift(s.type, s.days, s.nd));
+      } else {
+        renderDefaultShifts();
+      }
+
+      document.getElementById('regularOtHrs').value = state.otHrs || '';
+      document.getElementById('restDaysWorked').value = state.restDays || '';
+      document.getElementById('restDayOtHrs').value = state.restOtHrs || '';
+
+      holidays = Array.isArray(state.holidays)
+        ? state.holidays.map(h => ({ type: h.type === 'regular' ? 'regular' : 'special', days: Number(h.days) || 0 }))
+        : [];
+      renderHolidays();
+
+      document.getElementById('incGov').checked = state.incGov ?? true;
+      document.getElementById('incPhilhealth').checked = state.incPhil ?? true;
+      document.getElementById('incPagibig').checked = state.incPagibig ?? true;
+      document.getElementById('incTax').checked = state.incTax ?? true;
+
+      document.getElementById('otherDeductions').value = state.otherDeductions || '';
+      ['taxableAllowances','nonTaxableAllowances','supplementaryPay','thirteenthMonth','absenceDays','undertimeHours','sssLoan','pagibigLoan'].forEach(id => {
+        document.getElementById(id).value = state[id] || '';
+      });
+      currentPeriod = state.period || currentPeriod;
+      syncPeriodUI();
+
+      calculate();
+      if (typeof markSaved === 'function') markSaved();
+    }
+
+    function updateProfileDropdown() {
+      const profiles = getProfiles();
+      const select = document.getElementById('profileSelect');
+      const activeName = localStorage.getItem(ACTIVE_KEY) || Object.keys(profiles)[0];
+
+      select.innerHTML = '';
+      Object.keys(profiles).forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        if (name === activeName) option.selected = true;
+        select.appendChild(option);
+      });
+
+      const isDefaultOnly = Object.keys(profiles).length <= 1 && profiles["Default Profile"];
+      document.getElementById('deleteProfileBtn').style.display = isDefaultOnly ? 'none' : 'block';
+    }
+
+    function saveNewProfile() {
+      const name = prompt("Preset Profile Name:", "Regular Shift");
+      if (!name || name.trim() === '') return;
+
+      const cleanName = name.trim();
+      const profiles = getProfiles();
+      profiles[cleanName] = captureCurrentFormState();
+
+      saveProfilesToStorage(profiles);
+      localStorage.setItem(ACTIVE_KEY, cleanName);
+      updateProfileDropdown();
+    }
+
+    function loadSelectedProfile() {
+      const select = document.getElementById('profileSelect');
+      const name = select.value;
+      const profiles = getProfiles();
+
+      if (profiles[name]) {
+        localStorage.setItem(ACTIVE_KEY, name);
+        populateForm(profiles[name]);
+      }
+    }
+
+    function deleteCurrentProfile() {
+      const select = document.getElementById('profileSelect');
+      const name = select.value;
+      const profiles = getProfiles();
+
+      if (confirm(`Delete preset "${name}"?`)) {
+        delete profiles[name];
+        saveProfilesToStorage(profiles);
+        const remainingNames = Object.keys(profiles);
+        localStorage.setItem(ACTIVE_KEY, remainingNames[0] || "Default Profile");
+        updateProfileDropdown();
+        loadSelectedProfile();
+      }
+    }
+
+
+    // PAYROLL ARCHIVE
+    const ARCHIVE_KEY = 'sweldo_payroll_archive_v1';
+    let editingArchiveId = null;
+
+    function getPayrollArchive() {
+      try {
+        const data = localStorage.getItem(ARCHIVE_KEY);
+        const records = data ? JSON.parse(data) : [];
+        return Array.isArray(records) ? records : [];
+      } catch (e) { return []; }
+    }
+
+    function savePayrollArchive(records) {
+      localStorage.setItem(ARCHIVE_KEY, JSON.stringify(records));
+    }
+
+    function formatArchiveDate(value) {
+      if (!value) return 'No date';
+      const d = new Date(value + 'T00:00:00');
+      return isNaN(d) ? value : d.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
+    }
+
+    function readArchiveDeductionBreakdown() {
+      const amount = id => Math.max(0, parseFloat(document.getElementById(id).value) || 0);
+      return { sss:amount('archiveSSS'), philHealth:amount('archivePhilHealth'), pagibig:amount('archivePagibig'), tax:amount('archiveTax'), other:amount('archiveOtherDeduction') };
+    }
+
+    function archiveDeductionTotal(breakdown = {}) {
+      return ['sss','philHealth','pagibig','tax','other'].reduce((sum,key)=>sum+(Number(breakdown[key])||0),0);
+    }
+
+    function fillArchiveDeductionBreakdown(breakdown = {}) {
+      const fields = {archiveSSS:'sss',archivePhilHealth:'philHealth',archivePagibig:'pagibig',archiveTax:'tax',archiveOtherDeduction:'other'};
+      Object.entries(fields).forEach(([id,key])=>{ const value=Number(breakdown?.[key])||0; document.getElementById(id).value=value ? value.toFixed(2) : ''; });
+    }
+
+    function updateArchiveDeductionTotal() {
+      const total = archiveDeductionTotal(readArchiveDeductionBreakdown());
+      if (!total) return;
+      document.getElementById('archiveDeductions').value = total.toFixed(2);
+      const gross = Math.max(0,parseFloat(document.getElementById('archiveGross').value)||0);
+      document.getElementById('archiveNet').value = Math.max(0,gross-total).toFixed(2);
+    }
+
+    function openArchiveModal(record = null) {
+      editingArchiveId = record ? record.id : null;
+      document.getElementById('archiveModalTitle').textContent = record ? 'Edit Payroll Record' : 'Add Previous Payroll';
+      const now = new Date();
+      const today = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,10);
+      document.getElementById('archiveDate').value = record?.date || today;
+      document.getElementById('archiveStart').value = record?.startDate || '';
+      document.getElementById('archiveEnd').value = record?.endDate || '';
+      document.getElementById('archiveEmployer').value = record?.employer || '';
+      document.getElementById('archiveTags').value = Array.isArray(record?.tags) ? record.tags.join(', ') : (record?.tags || '');
+      document.getElementById('archivePeriod').value = record?.period || 'Semi-Monthly';
+      document.getElementById('archiveGross').value = record?.gross ?? '';
+      document.getElementById('archiveDeductions').value = record?.deductions ?? '';
+      document.getElementById('archiveNet').value = record?.net ?? '';
+      document.getElementById('archiveSalary').value = record?.salary ?? '';
+      fillArchiveDeductionBreakdown(record?.deductionBreakdown);
+      document.getElementById('archiveNote').value = record?.note || '';
+      document.getElementById('archiveModal').style.display = 'flex';
+    }
+
+    function closeArchiveModal() {
+      document.getElementById('archiveModal').style.display = 'none';
+      editingArchiveId = null;
+    }
+
+    function saveArchiveRecord() {
+      const date = document.getElementById('archiveDate').value;
+      const period = document.getElementById('archivePeriod').value;
+      const gross = Math.max(0, parseFloat(document.getElementById('archiveGross').value)||0);
+      const enteredDeductions = Math.max(0, parseFloat(document.getElementById('archiveDeductions').value)||0);
+      const deductionBreakdown = readArchiveDeductionBreakdown();
+      const itemizedDeductions = archiveDeductionTotal(deductionBreakdown);
+      const deductions = itemizedDeductions > 0 ? itemizedDeductions : enteredDeductions;
+      const netField = document.getElementById('archiveNet').value;
+      const net = netField === '' ? Math.max(0,gross-deductions) : Math.max(0,parseFloat(netField)||0);
+      const salaryField = document.getElementById('archiveSalary').value;
+      const salary = salaryField === '' ? null : Math.max(0,parseFloat(salaryField)||0);
+      const note = document.getElementById('archiveNote').value.trim();
+      const startDate = document.getElementById('archiveStart').value;
+      const endDate = document.getElementById('archiveEnd').value;
+      const employer = document.getElementById('archiveEmployer').value.trim().slice(0,80);
+      const tags = document.getElementById('archiveTags').value.split(',').map(v=>v.trim()).filter(Boolean).slice(0,12);
+
+      if (!date) return alert('Please select a payroll date.');
+      if (gross === 0 && deductions === 0 && net === 0) return alert('Please enter at least a payroll amount.');
+
+      const records = getPayrollArchive();
+      if (startDate && endDate && startDate > endDate) return alert('Period start must be before period end.');
+      const existing = editingArchiveId ? records.find(r=>r.id===editingArchiveId) : null;
+      const estimateNet = note.includes('Saved from current calculator') ? (window.currentPayrollResult?.net ?? net) : (existing?.estimateNet ?? null);
+      const record = { id: editingArchiveId || ('pay_'+Date.now()), date, startDate, endDate, employer, tags, period, gross, deductions, deductionBreakdown:itemizedDeductions>0?deductionBreakdown:null, net, estimateNet, salary, note:note.slice(0,500), createdAt: new Date().toISOString() };
+
+      if (editingArchiveId) {
+        const i = records.findIndex(r=>r.id===editingArchiveId);
+        if (i >= 0) records[i] = {...records[i], ...record};
+      } else records.push(record);
+
+      savePayrollArchive(records);
+      renderPayrollArchive();
+      closeArchiveModal();
+    }
+
+    function saveCurrentPayrollToArchive() {
+      calculate();
+      const money = id => parseFloat(document.getElementById(id).textContent.replace(/[₱,−]/g,'')) || 0;
+      const now = new Date();
+      const today = new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,10);
+
+      editingArchiveId = null;
+      document.getElementById('archiveModalTitle').textContent = 'Save Current Payroll';
+      document.getElementById('archiveDate').value = today;
+      document.getElementById('archiveStart').value = '';
+      document.getElementById('archiveEnd').value = '';
+      document.getElementById('archiveEmployer').value = document.getElementById('profileSelect').value || '';
+      document.getElementById('archiveTags').value = 'estimate';
+      document.getElementById('archivePeriod').value = currentPeriod === 'monthly' ? 'Monthly' : 'Semi-Monthly';
+      document.getElementById('archiveGross').value = money('grossDisplay');
+      document.getElementById('archiveDeductions').value = money('deductionDisplay');
+      document.getElementById('archiveNet').value = money('netPayDisplay');
+      document.getElementById('archiveSalary').value = parseFloat(document.getElementById('basicSalary').value)||0;
+      const result = window.currentPayrollResult || {};
+      fillArchiveDeductionBreakdown({sss:result.sss,philHealth:result.phil,pagibig:result.pagibig,tax:result.tax,other:result.other});
+      document.getElementById('archiveNote').value = 'Saved from current calculator';
+      document.getElementById('archiveModal').style.display = 'flex';
+    }
+
+    function editArchiveRecord(id) {
+      const record = getPayrollArchive().find(r=>r.id===id);
+      if (record) openArchiveModal(record);
+    }
+
+    function deleteArchiveRecord(id) {
+      const record = getPayrollArchive().find(r=>r.id===id);
+      if (!record) return;
+      if (confirm('Delete payroll record for '+formatArchiveDate(record.date)+'?')) {
+        savePayrollArchive(getPayrollArchive().filter(r=>r.id!==id));
+        renderPayrollArchive();
+      }
+    }
+
+    function renderPayrollArchive() {
+      const records = getPayrollArchive().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+      document.getElementById('archiveRecords').textContent = records.length;
+      document.getElementById('archiveCountBadge').textContent = records.length + ' saved';
+
+      const avg = records.length ? records.reduce((sum,r)=>sum+(Number(r.net)||0),0)/records.length : 0;
+      const latest = records.length ? Number(records[0].net)||0 : 0;
+      document.getElementById('archiveAverage').textContent = fmt(avg);
+      document.getElementById('archiveLatest').textContent = fmt(latest);
+
+      const list = document.getElementById('archiveList');
+      if (!records.length) {
+        list.innerHTML = '<div class="archive-empty">No previous payrolls saved yet.<br>Add an old payroll or save your current calculation.</div>';
+        return;
+      }
+
+      list.innerHTML = records.map(r => `
+        <div class="archive-item" data-archive-id="${String(r.id).replace(/"/g,'&quot;')}">
+          <button class="archive-toggle" onclick="toggleArchiveItem(this)" aria-expanded="false">
+            <div class="archive-top">
+              <div style="display:flex;align-items:center;min-width:0;">
+                <span class="archive-chevron">⌄</span>
+                <div>
+                  <div class="archive-date">${formatArchiveDate(r.date)}</div>
+                  <div class="archive-period">${r.period||'Payroll'}</div>
+                </div>
+              </div>
+              <div>
+                <div class="archive-net">${fmt(Number(r.net)||0)}</div>
+                <div style="font-size:9px;color:var(--text-muted);text-align:right">Take-Home</div>
+              </div>
+            </div>
+          </button>
+          <div class="archive-details-wrap">
+            <div class="archive-details-inner">
+              <div class="archive-details">
+                <div class="archive-detail">Gross Pay<strong>${fmt(Number(r.gross)||0)}</strong></div>
+                <div class="archive-detail">Deductions<strong style="color:var(--danger)">−${fmt(Number(r.deductions)||0)}</strong></div>
+                <div class="archive-detail">Monthly Salary<strong>${r.salary!=null?fmt(Number(r.salary)||0):'—'}</strong></div>
+                <div class="archive-detail" style="text-align:right">
+                  <button class="archive-action" onclick="editArchiveRecord('${r.id}')">Edit</button>
+                  <button class="archive-action delete" onclick="deleteArchiveRecord('${r.id}')">Delete</button>
+                </div>
+              </div>
+              ${r.note ? `<div class="archive-note">${String(r.note).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>` : ''}
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    function toggleArchiveItem(button) {
+      const item = button.closest('.archive-item');
+      const expanded = item.classList.toggle('expanded');
+      button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    }
+
+    // ===== Compare Feature Functions =====
+    function openCompareModal() {
+      const records = getPayrollArchive();
+      const select = document.getElementById('compareSelect');
+      select.innerHTML = '';
+
+      if (records.length === 0) {
+        document.getElementById('compareEmptyState').style.display = 'block';
+        document.getElementById('compareBody').style.display = 'none';
+        document.getElementById('compareModal').style.display = 'flex';
+        return;
+      }
+
+      document.getElementById('compareEmptyState').style.display = 'none';
+      document.getElementById('compareBody').style.display = 'block';
+
+      records.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.id;
+        opt.textContent = `${formatArchiveDate(r.date)} — Net: ${fmt(Number(r.net) || 0)}`;
+        select.appendChild(opt);
+      });
+
+      document.getElementById('compareModal').style.display = 'flex';
+      renderComparison();
+    }
+
+    function closeCompareModal() {
+      document.getElementById('compareModal').style.display = 'none';
+    }
+
+    function renderComparison() {
+      const records = getPayrollArchive();
+      if (records.length === 0) return;
+
+      const selectId = document.getElementById('compareSelect').value;
+      const record = records.find(r => r.id === selectId) || records[0];
+      if (!record) return;
+
+      calculate();
+      const money = id => parseFloat(document.getElementById(id).textContent.replace(/[₱,−]/g, '')) || 0;
+      
+      const grossNow = money('grossDisplay');
+      const deductNow = money('deductionDisplay');
+      const netNow = money('netPayDisplay');
+
+      const grossSaved = Number(record.gross) || 0;
+      const deductSaved = Number(record.deductions) || 0;
+      const netSaved = Number(record.net) || 0;
+
+      document.getElementById('cmpGrossNow').textContent = fmt(grossNow);
+      document.getElementById('cmpGrossSaved').textContent = fmt(grossSaved);
+      setDiffText('cmpGrossDiff', grossNow, grossSaved, true);
+
+      document.getElementById('cmpDeductNow').textContent = fmt(deductNow);
+      document.getElementById('cmpDeductSaved').textContent = fmt(deductSaved);
+      setDiffText('cmpDeductDiff', deductNow, deductSaved, false);
+
+      document.getElementById('cmpNetNow').textContent = fmt(netNow);
+      document.getElementById('cmpNetSaved').textContent = fmt(netSaved);
+      setDiffText('cmpNetDiff', netNow, netSaved, true);
+
+      const netDiff = netNow - netSaved;
+      const noteElem = document.getElementById('compareSummaryNote');
+      const dateStr = formatArchiveDate(record.date);
+      if (netDiff > 0) {
+        noteElem.innerHTML = `Your current estimate is <strong>${fmt(netDiff)} higher</strong> in take-home pay compared to your saved payroll from <strong>${dateStr}</strong>.`;
+      } else if (netDiff < 0) {
+        noteElem.innerHTML = `Your current estimate is <strong>${fmt(Math.abs(netDiff))} lower</strong> in take-home pay compared to your saved payroll from <strong>${dateStr}</strong>.`;
+      } else {
+        noteElem.innerHTML = `Your current estimate has the <strong>exact same</strong> take-home pay as your saved payroll from <strong>${dateStr}</strong>.`;
+      }
+    }
+
+    function setDiffText(elementId, nowVal, savedVal, higherIsPositive) {
+      const diff = nowVal - savedVal;
+      const elem = document.getElementById(elementId);
+      if (Math.abs(diff) < 0.01) {
+        elem.textContent = '—';
+        elem.className = 'compare-diff neutral';
+        return;
+      }
+      const sign = diff > 0 ? '+' : '';
+      elem.textContent = sign + fmt(diff).replace('₱', '₱');
+      
+      const isPositiveGood = higherIsPositive ? (diff > 0) : (diff < 0);
+      elem.className = 'compare-diff ' + (isPositiveGood ? 'positive' : 'negative');
+    }
+
+    // ===== Payroll Rules + Backup / Restore =====
+    const PAYROLL_RULES_KEY = 'sweldo_payroll_rules_v2';
+    const ACTIVE_RULES_KEY = 'sweldo_active_payroll_rule_v2';
+    const DEFAULT_NIGHT_DIFF_PERCENT = 6.625;
+    const DEFAULT_PAYROLL_RULES = {
+      regularOt: 125, nightDiff: DEFAULT_NIGHT_DIFF_PERCENT, restDay: 130, restOt: 169,
+      specialHoliday: 130, regularHoliday: 200, hoursPerDay: 8
+    };
+
+    function getPayrollRuleProfiles(){
+      try{
+        const saved=JSON.parse(localStorage.getItem(PAYROLL_RULES_KEY)||'null');
+        if(saved&&typeof saved==='object'&&!Array.isArray(saved)) return saved;
+      }catch(e){}
+      const defaults={'Default / PH Standard':{...DEFAULT_PAYROLL_RULES}};
+      localStorage.setItem(PAYROLL_RULES_KEY,JSON.stringify(defaults));
+      return defaults;
+    }
+    function savePayrollRuleProfiles(p){localStorage.setItem(PAYROLL_RULES_KEY,JSON.stringify(p));}
+    function getActivePayrollRuleName(){
+      const p=getPayrollRuleProfiles(), a=localStorage.getItem(ACTIVE_RULES_KEY);
+      return a&&p[a]?a:Object.keys(p)[0];
+    }
+    function getActivePayrollRules(){
+      const p=getPayrollRuleProfiles();
+      return {...DEFAULT_PAYROLL_RULES,...(p[getActivePayrollRuleName()]||{})};
+    }
+    function updatePayrollRulesDropdown(){
+      const s=document.getElementById('payrollRulesProfile'); if(!s)return;
+      const p=getPayrollRuleProfiles(), a=getActivePayrollRuleName();
+      s.innerHTML='';
+      Object.keys(p).forEach(n=>{
+        const o=document.createElement('option'); o.value=n; o.textContent=n; o.selected=n===a; s.appendChild(o);
+      });
+    }
+    function fillPayrollRuleInputs(r){
+      document.getElementById('ruleRegularOt').value=r.regularOt;
+      document.getElementById('ruleNightDiff').value=Number.isFinite(Number(r.nightDiff))?r.nightDiff:DEFAULT_NIGHT_DIFF_PERCENT;
+      document.getElementById('ruleRestDay').value=r.restDay;
+      document.getElementById('ruleRestOt').value=r.restOt;
+      document.getElementById('ruleSpecialHoliday').value=r.specialHoliday;
+      document.getElementById('ruleRegularHoliday').value=r.regularHoliday;
+      document.getElementById('ruleHoursPerDay').value=r.hoursPerDay;
+    }
+    function readPayrollRuleInputs(){
+      const n=id=>Math.max(0,parseFloat(document.getElementById(id).value)||0);
+      return {regularOt:n('ruleRegularOt'),nightDiff:n('ruleNightDiff'),restDay:n('ruleRestDay'),
+        restOt:n('ruleRestOt'),specialHoliday:n('ruleSpecialHoliday'),regularHoliday:n('ruleRegularHoliday'),
+        hoursPerDay:Math.max(.1,n('ruleHoursPerDay'))};
+    }
+    function openPayrollRulesModal(){
+      updatePayrollRulesDropdown();
+      fillPayrollRuleInputs(getActivePayrollRules());
+      document.getElementById('payrollRulesModal').style.display='flex';
+    }
+    function closePayrollRulesModal(){document.getElementById('payrollRulesModal').style.display='none';}
+    function savePayrollRules(){
+      const p=getPayrollRuleProfiles(), n=getActivePayrollRuleName();
+      p[n]=readPayrollRuleInputs(); savePayrollRuleProfiles(p);
+      localStorage.setItem(ACTIVE_RULES_KEY,n); closePayrollRulesModal(); calculate();
+    }
+    function savePayrollRuleProfile(){
+      const n=prompt('Company / Payroll Profile Name:','My Company');
+      if(!n||!n.trim())return;
+      const clean=n.trim(),p=getPayrollRuleProfiles();
+      p[clean]=readPayrollRuleInputs(); savePayrollRuleProfiles(p);
+      localStorage.setItem(ACTIVE_RULES_KEY,clean); updatePayrollRulesDropdown();
+    }
+    function loadPayrollRuleProfile(){
+      const n=document.getElementById('payrollRulesProfile').value,p=getPayrollRuleProfiles();
+      if(!p[n])return;
+      localStorage.setItem(ACTIVE_RULES_KEY,n); fillPayrollRuleInputs({...DEFAULT_PAYROLL_RULES,...p[n]}); calculate();
+    }
+    function resetPayrollRules(){fillPayrollRuleInputs(DEFAULT_PAYROLL_RULES);}
+
+    function exportSweldoBackup(){
+      const backup={app:'Sweldo',version:3,exportedAt:new Date().toISOString(),data:{
+        profiles:getProfiles(),activeProfile:localStorage.getItem(ACTIVE_KEY),
+        payrollArchive:getPayrollArchive(),payrollRuleProfiles:getPayrollRuleProfiles(),
+        cutoffDrafts:getAllCutoffDrafts(),
+        activePayrollRuleProfile:getActivePayrollRuleName(),
+        theme:document.body.getAttribute('data-theme')||'light'
+      }};
+      const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='Sweldo_Backup_'+new Date().toISOString().slice(0,10)+'.json';
+      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }
+    function importSweldoBackup(event){
+      const file=event.target.files&&event.target.files[0];event.target.value='';if(!file)return;
+      const reader=new FileReader();
+      reader.onload=()=>{
+        try{
+          const backup=JSON.parse(reader.result),d=backup&&backup.data?backup.data:backup;
+          if(!d||typeof d!=='object')throw new Error();
+          if(backup?.app && backup.app!=='Sweldo') throw new Error();
+          if(JSON.stringify(d).length>2000000) throw new Error();
+          if(d.profiles&&typeof d.profiles==='object'&&!Array.isArray(d.profiles)&&Object.keys(d.profiles).length<=100)saveProfilesToStorage(d.profiles);
+          if(d.activeProfile)localStorage.setItem(ACTIVE_KEY,d.activeProfile);
+          if(Array.isArray(d.payrollArchive)&&d.payrollArchive.length<=5000)savePayrollArchive(d.payrollArchive.map(r=>({
+            ...r,id:String(r.id||('pay_'+Date.now())).slice(0,100),note:String(r.note||'').slice(0,500),employer:String(r.employer||'').slice(0,80),
+            tags:Array.isArray(r.tags)?r.tags.map(t=>String(t).slice(0,40)).slice(0,12):[],gross:Math.max(0,Number(r.gross)||0),deductions:Math.max(0,Number(r.deductions)||0),net:Math.max(0,Number(r.net)||0)
+          })));
+          if(d.cutoffDrafts&&typeof d.cutoffDrafts==='object'&&!Array.isArray(d.cutoffDrafts))localStorage.setItem(PERIOD_DRAFTS_KEY,JSON.stringify(d.cutoffDrafts));
+          if(d.payrollRuleProfiles&&typeof d.payrollRuleProfiles==='object'){
+            savePayrollRuleProfiles(d.payrollRuleProfiles);
+            if(d.activePayrollRuleProfile)localStorage.setItem(ACTIVE_RULES_KEY,d.activePayrollRuleProfile);
+          }
+          if(d.theme==='dark'||d.theme==='light'){
+            document.body.setAttribute('data-theme',d.theme);
+            document.getElementById('themeToggle').innerHTML=iconSvg(d.theme==='dark'?'sun':'moon','');
+          }
+          updateProfileDropdown();updatePayrollRulesDropdown();loadSelectedProfile();renderPayrollArchive();calculate();
+          alert('Sweldo backup imported successfully.');
+        }catch(e){alert('Unable to import this backup. Please select a valid Sweldo JSON backup.');}
+      };
+      reader.readAsText(file);
+    }
+
+    // Statutory Calculations
+    // NOTE: SSS is computed later in this file (search "SSS_EMPLOYEE_RATE") — that
+    // definition is the one actually used, since it's declared after this legacy block.
+
+    function getPhilHealthContribution(monthlySalary) {
+      let salary = Math.min(Math.max(monthlySalary, 10000), 100000);
+      return salary * 0.025;
+    }
+
+    function getPagIBIGContribution(monthlySalary) {
+      if (monthlySalary <= 1500) return monthlySalary * 0.01;
+      return Math.min(monthlySalary * 0.02, 200);
+    }
+
+    function getWithholdingTax(taxableIncome) {
+      if (taxableIncome <= 20833) return 0;
+      if (taxableIncome <= 33332) return (taxableIncome - 20833) * 0.15;
+      if (taxableIncome <= 66666) return 1875 + (taxableIncome - 33333) * 0.20;
+      if (taxableIncome <= 166666) return 8541.80 + (taxableIncome - 66667) * 0.25;
+      if (taxableIncome <= 666666) return 33541.80 + (taxableIncome - 166667) * 0.30;
+      return 183541.80 + (taxableIncome - 666667) * 0.35;
+    }
+
+    function calculate(scroll = false) {
+      const baseMonthly = parseFloat(document.getElementById('basicSalary').value) || 0;
+      const daysPerMonth = parseFloat(document.getElementById('daysPerMonth').value) || 20;
+
+      const dailyRate = baseMonthly / daysPerMonth;
+      const hourlyRate = dailyRate / 8;
+      const nightDiffPercent = getActivePayrollRules().nightDiff ?? DEFAULT_NIGHT_DIFF_PERCENT;
+      const ndHourlyRate = hourlyRate * (nightDiffPercent / 100);
+
+      document.getElementById('hourlyRateDisplay').textContent = 
+        `Daily Rate: ${fmt(dailyRate)} | Hourly: ${fmt(hourlyRate)}`;
+
+      let totalDaysWorked = 0;
+      let totalNDPay = 0;
+
+      document.querySelectorAll('.shift-row').forEach(row => {
+        const days = parseFloat(row.querySelector('.shift-days').value) || 0;
+        const ndHrs = parseFloat(row.querySelector('.shift-nd-hrs').value) || 0;
+
+        totalDaysWorked += days;
+        const ndRate = nightDiffPercent / 100;
+        const ndPerHour = hourlyRate * ndRate;
+        totalNDPay += (days * ndHrs * ndPerHour);
+      });
+
+      document.getElementById('totalDaysDisplay').textContent = `${totalDaysWorked} / 10 Days`;
+      document.getElementById('nightDiffDisplay').textContent = fmt(totalNDPay);
+
+      const regularOtHrs = parseFloat(document.getElementById('regularOtHrs').value) || 0;
+      const restDaysWorked = parseFloat(document.getElementById('restDaysWorked').value) || 0;
+      const restDayOtHrs = parseFloat(document.getElementById('restDayOtHrs').value) || 0;
+
+      const rules = getActivePayrollRules();
+      const regularOtPerHour = hourlyRate * ((rules.regularOt || 125) / 100);
+      const restDayPerDay = dailyRate * ((rules.restDay || 130) / 100);
+      const restDayOtPerHour = hourlyRate * ((rules.restOt || 169) / 100);
+
+      const regularOtPay = regularOtHrs * regularOtPerHour;
+      const restDayPay = restDaysWorked * restDayPerDay;
+      const restDayOtPay = restDayOtHrs * restDayOtPerHour;
+
+      const totalOTPay = regularOtPay + restDayPay + restDayOtPay;
+
+      const holidayPremium = getHolidayPremium(dailyRate);
+
+      const basicEarned = dailyRate * totalDaysWorked;
+      const otherDeduct = parseFloat(document.getElementById('otherDeductions').value) || 0;
+
+      const grossPay = basicEarned + totalNDPay + totalOTPay + holidayPremium;
+
+      const mGov = getSSSContribution(baseMonthly);
+      const mPhil = getPhilHealthContribution(baseMonthly);
+      const mPagibig = getPagIBIGContribution(baseMonthly);
+
+      const incGov = document.getElementById('incGov').checked;
+      const incPhil = document.getElementById('incPhilhealth').checked;
+      const incPagibig = document.getElementById('incPagibig').checked;
+      const incTax = document.getElementById('incTax').checked;
+
+      const pGov = incGov ? (mGov / 2) : 0;
+      const pPhil = incPhil ? (mPhil / 2) : 0;
+      const pPagibig = incPagibig ? (mPagibig / 2) : 0;
+
+      const monthlyTaxable = Math.max(0, (baseMonthly + (totalOTPay + totalNDPay + holidayPremium) * 2) - (mGov + mPhil + mPagibig));
+      const pTax = incTax ? (getWithholdingTax(monthlyTaxable) / 2) : 0;
+
+      const multiplier = (currentPeriod === 'monthly') ? 2 : 1;
+
+      const finalGross = grossPay * multiplier;
+      const finalGov = pGov * multiplier;
+      const finalPhil = pPhil * multiplier;
+      const finalPagibig = pPagibig * multiplier;
+      const finalTax = pTax * multiplier;
+      const finalOther = otherDeduct * multiplier;
+      const finalND = totalNDPay * multiplier;
+      const finalOT = totalOTPay * multiplier;
+      const finalHoliday = holidayPremium * multiplier;
+      const finalBasic = basicEarned * multiplier;
+
+      const totalDeductions = finalGov + finalPhil + finalPagibig + finalTax + finalOther;
+      const netPay = Math.max(0, finalGross - totalDeductions);
+
+      document.getElementById('netPayDisplay').textContent = fmt(netPay);
+      document.getElementById('grossDisplay').textContent = fmt(finalGross);
+      document.getElementById('deductionDisplay').textContent = `−${fmt(totalDeductions)}`;
+
+      document.getElementById('valBasicEarned').textContent = fmt(finalBasic);
+      document.getElementById('valNDBreakdown').textContent = fmt(finalND);
+      document.getElementById('valOTBreakdown').textContent = fmt(finalOT);
+      document.getElementById('valHolidayBreakdown').textContent = fmt(finalHoliday);
+      document.getElementById('holidayPremiumDisplay').textContent = fmt(finalHoliday);
+      document.getElementById('valGov').textContent = `−${fmt(finalGov)}`;
+      document.getElementById('valPhilhealth').textContent = `−${fmt(finalPhil)}`;
+      document.getElementById('valPagibig').textContent = `−${fmt(finalPagibig)}`;
+      document.getElementById('valTax').textContent = `−${fmt(finalTax)}`;
+      document.getElementById('valOther').textContent = `−${fmt(finalOther)}`;
+
+      document.getElementById('rowGov').classList.toggle('disabled', !incGov);
+      document.getElementById('rowPhilhealth').classList.toggle('disabled', !incPhil);
+      document.getElementById('rowPagibig').classList.toggle('disabled', !incPagibig);
+      document.getElementById('rowTax').classList.toggle('disabled', !incTax);
+
+      if (scroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 2026 calculation engine: period-aware, validated, and based on the PH 2025+ schedules.
+    function valueOf(id) {
+      const el = document.getElementById(id);
+      return el ? Math.max(0, Number.parseFloat(el.value) || 0) : 0;
+    }
+
+    // SSS contribution: gross pay is floored to the nearest ₱500 bracket (e.g. 10,124.63 -> 10,000),
+    // then 5% Employee Share (deducted from pay) / 10% Employer Share (paid by company, not deducted).
+    const SSS_EMPLOYEE_RATE = 0.05;
+    const SSS_EMPLOYER_RATE = 0.10;
+    function getSSSBracket(grossPay) {
+      return Math.floor(Math.max(0, grossPay) / 500) * 500;
+    }
+    function getSSSContribution(grossPay) {
+      // Returns the EMPLOYEE share only — this is what gets deducted from take-home pay.
+      return getSSSBracket(grossPay) * SSS_EMPLOYEE_RATE;
+    }
+    function getSSSEmployerShare(grossPay) {
+      // Employer share — informational only, not deducted from the employee.
+      return getSSSBracket(grossPay) * SSS_EMPLOYER_RATE;
+    }
+
+
+
+    function getWithholdingTaxForPeriod(taxableIncome, period) {
+      const t = Math.max(0, taxableIncome);
+      const money = value => Math.round((value + Number.EPSILON) * 100) / 100;
+
+      // BIR RR 11-2018, Annex "E" — effective January 1, 2023 onward.
+      if (period === 'monthly') {
+        if (t <= 20833) return 0;
+        if (t < 33333) return money((t - 20833) * .15);
+        if (t < 66667) return money(1875 + (t - 33333) * .20);
+        if (t < 166667) return money(8541.80 + (t - 66667) * .25);
+        if (t < 666667) return money(33541.80 + (t - 166667) * .30);
+        return money(183541.80 + (t - 666667) * .35);
+      }
+
+      // Official semi-monthly table. Both cutoff tabs use these exact values.
+      if (t <= 10417) return 0;
+      if (t < 16667) return money((t - 10417) * .15);
+      if (t < 33333) return money(937.50 + (t - 16667) * .20);
+      if (t < 83333) return money(4270.70 + (t - 33333) * .25);
+      if (t < 333333) return money(16770.70 + (t - 83333) * .30);
+      return money(91770.70 + (t - 333333) * .35);
+    }
+
+    function validateInputs(totalDays, holidayDays) {
+      const errors=[];
+      document.querySelectorAll('.field-error').forEach(el=>el.classList.remove('field-error'));
+      const mark=(id,msg)=>{ const el=document.getElementById(id); if(el)el.classList.add('field-error'); errors.push(msg); };
+      if(valueOf('basicSalary')<=0) mark('basicSalary','Enter a monthly salary greater than zero.');
+      if(valueOf('daysPerMonth')<1||valueOf('daysPerMonth')>31) mark('daysPerMonth','Paid working days must be between 1 and 31.');
+      if(totalDays>31) errors.push('Total shift days cannot exceed 31 for one payroll period.');
+      if(valueOf('absenceDays')>totalDays) mark('absenceDays','Absence days cannot exceed entered shift days.');
+      if(holidayDays>totalDays) errors.push('Holiday days exceed total shift days; confirm that the same worked days are represented correctly.');
+      document.querySelectorAll('input[type=number]').forEach(el=>{if(Number(el.value)<0){el.classList.add('field-error');errors.push('Negative payroll amounts are not allowed.');}});
+      const box=document.getElementById('validationSummary');
+      box.innerHTML=errors.length?'<strong>Please review:</strong><br>'+errors.map(escapeHtml).join('<br>'):'';
+      box.classList.toggle('show',errors.length>0);
+      return errors;
+    }
+
+    function calculate(scroll = false) {
+      const calculationPeriod=currentPeriod==='monthly'?'semi-1':currentPeriod;
+      const baseMonthly=valueOf('basicSalary'), daysPerMonth=valueOf('daysPerMonth')||20;
+      const rules=getActivePayrollRules(), hoursPerDay=rules.hoursPerDay||8;
+      const dailyRate=baseMonthly/daysPerMonth, hourlyRate=dailyRate/hoursPerDay;
+      let totalDaysWorked=0,totalNDPay=0;
+      document.querySelectorAll('.shift-row').forEach(row=>{
+        const days=Math.max(0,parseFloat(row.querySelector('.shift-days').value)||0);
+        const ndHrs=Math.max(0,parseFloat(row.querySelector('.shift-nd-hrs').value)||0);
+        totalDaysWorked+=days;
+        totalNDPay+=days*ndHrs*hourlyRate*((rules.nightDiff ?? DEFAULT_NIGHT_DIFF_PERCENT)/100);
+      });
+      const holidayDays=holidays.reduce((s,h)=>s+(Number(h.days)||0),0);
+      const errors=validateInputs(totalDaysWorked,holidayDays);
+      const absenceDays=valueOf('absenceDays'), undertimeHours=valueOf('undertimeHours');
+      const payableDays=Math.max(0,totalDaysWorked-absenceDays);
+      const attendanceDeduction=absenceDays*dailyRate+undertimeHours*hourlyRate;
+      const basicEarned=Math.max(0,dailyRate*totalDaysWorked-attendanceDeduction);
+      const regularOtPay=valueOf('regularOtHrs')*hourlyRate*((rules.regularOt||125)/100);
+      const restDayPay=valueOf('restDaysWorked')*dailyRate*((rules.restDay||130)/100);
+      const restDayOtPay=valueOf('restDayOtHrs')*hourlyRate*((rules.restOt||169)/100);
+      const totalOTPay=regularOtPay+restDayPay+restDayOtPay;
+      const holidayPremium=getHolidayPremium(dailyRate);
+      const taxableAllowances=valueOf('taxableAllowances'), nonTaxableAllowances=valueOf('nonTaxableAllowances');
+      const supplementaryPay=valueOf('supplementaryPay'), thirteenthMonth=valueOf('thirteenthMonth');
+      const taxable13th=Math.max(0,thirteenthMonth-90000);
+      const grossPay=basicEarned+totalNDPay+totalOTPay+holidayPremium+taxableAllowances+nonTaxableAllowances+supplementaryPay+thirteenthMonth;
+      const periodShare=.5;
+      const incGov=document.getElementById('incGov').checked,incPhil=document.getElementById('incPhilhealth').checked;
+      const incPagibig=document.getElementById('incPagibig').checked,incTax=document.getElementById('incTax').checked;
+      const sss=incGov?getSSSContribution(grossPay):0;
+      const phil=incPhil?getPhilHealthContribution(baseMonthly)*periodShare:0;
+      const pagibig=incPagibig?(currentPeriod==='semi-1'?0:getPagIBIGContribution(baseMonthly)):0;
+      const taxableIncome=Math.max(0,basicEarned+totalNDPay+totalOTPay+holidayPremium+taxableAllowances+supplementaryPay+taxable13th-sss-phil-pagibig);
+      const tax=incTax?getWithholdingTaxForPeriod(taxableIncome,calculationPeriod):0;
+      const other=valueOf('otherDeductions')+valueOf('sssLoan')+valueOf('pagibigLoan');
+      const totalDeductions=sss+phil+pagibig+tax+other;
+      const netPay=Math.max(0,grossPay-totalDeductions);
+      const write=(id,text)=>{const el=document.getElementById(id);if(el)el.textContent=text;};
+      write('hourlyRateDisplay',`Daily Rate: ${fmt(dailyRate)} | Hourly: ${fmt(hourlyRate)}`);
+      write('totalDaysDisplay',`${totalDaysWorked} worked • ${payableDays} paid day(s)`);
+      write('nightDiffDisplay',fmt(totalNDPay)); write('netPayDisplay',fmt(netPay)); write('grossDisplay',fmt(grossPay));
+      write('deductionDisplay',`−${fmt(totalDeductions)}`); write('valBasicEarned',fmt(basicEarned)); write('valNDBreakdown',fmt(totalNDPay));
+      write('valOTBreakdown',fmt(totalOTPay)); write('valHolidayBreakdown',fmt(holidayPremium)); write('holidayPremiumDisplay',fmt(holidayPremium));
+      write('valGov',`−${fmt(sss)}`);write('valPhilhealth',`−${fmt(phil)}`);write('valPagibig',`−${fmt(pagibig)}`);write('valTax',`−${fmt(tax)}`);write('valOther',`−${fmt(other)}`);
+      [['rowGov',incGov],['rowPhilhealth',incPhil],['rowPagibig',incPagibig],['rowTax',incTax]].forEach(([id,on])=>document.getElementById(id).classList.toggle('disabled',!on));
+      write('dockNet',fmt(netPay));write('dockMeta',`Gross ${fmt(grossPay)} · Deductions ${fmt(totalDeductions)}`);
+      const formula=document.getElementById('formulaDetails');
+      if(formula)formula.innerHTML=`Basic: ${totalDaysWorked} days × ${fmt(dailyRate)} − attendance adjustment ${fmt(attendanceDeduction)} = <strong>${fmt(basicEarned)}</strong><br>Premiums: ND ${fmt(totalNDPay)} + OT/rest day ${fmt(totalOTPay)} + holiday ${fmt(holidayPremium)}<br>Mandatory employee share: SSS ${fmt(sss)}, PhilHealth ${fmt(phil)}, Pag-IBIG ${fmt(pagibig)}<br>Taxable compensation for this period: ${fmt(taxableIncome)} → withholding ${fmt(tax)}<br><strong>Net = ${fmt(grossPay)} − ${fmt(totalDeductions)} = ${fmt(netPay)}</strong>`;
+      const cutoffResult={gross:grossPay,deductions:totalDeductions,net:netPay,basic:basicEarned,nightDiff:totalNDPay,ot:totalOTPay,holiday:holidayPremium,sss,phil,pagibig,tax,other,taxableIncome,errors};
+      if(currentPeriod==='monthly') renderMonthlySummary(cutoffResult);
+      else { window.currentPayrollResult=cutoffResult; saveCurrentCutoffDraft(); markUnsaved(); }
+      if(scroll)document.getElementById('reviewSection').scrollIntoView({behavior:'smooth'});
+    }
+
+    function renderMonthlySummary(fallback){
+      const drafts=getProfileCutoffDrafts(),first=drafts['semi-1']?.result||fallback,second=drafts['semi-2']?.result||fallback;
+      const cents=value=>Math.round(((Number(value)||0)+Number.EPSILON)*100)/100;
+      const sum=key=>cents(first?.[key])+cents(second?.[key]);
+      const monthly={gross:sum('gross'),deductions:sum('deductions'),net:sum('net'),basic:sum('basic'),nightDiff:sum('nightDiff'),ot:sum('ot'),holiday:sum('holiday'),sss:sum('sss'),phil:sum('phil'),pagibig:sum('pagibig'),tax:sum('tax'),other:sum('other'),taxableIncome:sum('taxableIncome'),errors:[]};
+      const write=(id,text)=>{const el=document.getElementById(id);if(el)el.textContent=text;};
+      write('netPayDisplay',fmt(monthly.net));write('grossDisplay',fmt(monthly.gross));write('deductionDisplay',`−${fmt(monthly.deductions)}`);
+      write('monthlyFirstNet',fmt(first.net));write('monthlyFirstMeta',`Gross ${fmt(first.gross)} · Deductions ${fmt(first.deductions)}`);
+      write('monthlySecondNet',fmt(second.net));write('monthlySecondMeta',`Gross ${fmt(second.gross)} · Deductions ${fmt(second.deductions)}`);
+      write('valBasicEarned',fmt(monthly.basic));write('valNDBreakdown',fmt(monthly.nightDiff));write('valOTBreakdown',fmt(monthly.ot));write('valHolidayBreakdown',fmt(monthly.holiday));
+      write('valGov',`−${fmt(monthly.sss)}`);write('valPhilhealth',`−${fmt(monthly.phil)}`);write('valPagibig',`−${fmt(monthly.pagibig)}`);write('valTax',`−${fmt(monthly.tax)}`);write('valOther',`−${fmt(monthly.other)}`);
+      write('dockNet',fmt(monthly.net));write('dockMeta',`Gross ${fmt(monthly.gross)} · Deductions ${fmt(monthly.deductions)}`);
+      const missing=[];if(!drafts['semi-1']?.result)missing.push('first');if(!drafts['semi-2']?.result)missing.push('second');
+      write('monthlyNote',missing.length?`The ${missing.join(' and ')} cutoff currently uses the active cutoff values. Open it once to customize and save its independent estimate.`:'Monthly total is the exact sum of your saved first and second cutoff estimates.');
+      window.currentPayrollResult=monthly;
+    }
+
+    // Canvas Summary Image Generation
+    function generateSummaryGraphic() {
+      const canvas = document.getElementById('summaryCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const width = 600;
+      const height = 750;
+      canvas.width = width;
+      canvas.height = height;
+
+      const activeProfileName = document.getElementById('profileSelect').value || "Default";
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+
+      // Colors
+      const bgColor = isDark ? '#1C1C1E' : '#FFFFFF';
+      const textColor = isDark ? '#FFFFFF' : '#121A2C';
+      const textMuted = '#8E8E93';
+      const accentColor = '#007AFF';
+      const cardBg = isDark ? '#2C2C2E' : '#F2F2F7';
+      const dangerColor = '#FF3B30';
+      const successColor = '#34C759';
+
+      // Draw Background
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, width, height);
+
+      // Title Section
+      ctx.fillStyle = textColor;
+      ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+      ctx.fillText('Estimated Payroll', 40, 50);
+
+      ctx.fillStyle = textMuted;
+      ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+      const periodText = currentPeriod === 'monthly' ? 'Full Monthly Pay' : (currentPeriod === 'semi-2' ? 'Second Semi-Monthly Cutoff' : 'First Semi-Monthly Cutoff');
+      ctx.fillText(`Preset Profile: ${activeProfileName} • (${periodText})`, 40, 75);
+
+      // Net Pay Hero Box
+      ctx.fillStyle = cardBg;
+      ctx.beginPath();
+      ctx.roundRect(40, 95, 520, 118, 16);
+      ctx.fill();
+
+      ctx.fillStyle = textMuted;
+      ctx.font = '600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+      ctx.fillText('ESTIMATED TAKE-HOME PAY', 60, 125);
+
+      const takeHomeText = document.getElementById('netPayDisplay').textContent || '₱0.00';
+      ctx.save();
+      ctx.fillStyle = accentColor;
+      ctx.font = '700 38px Arial, Helvetica, sans-serif';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText(takeHomeText, 60, 173);
+      ctx.restore();
+
+      // Summary Gross vs Deductions Pill Cards
+      ctx.fillStyle = cardBg;
+      ctx.beginPath();
+      ctx.roundRect(40, 220, 250, 65, 12);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.roundRect(310, 220, 250, 65, 12);
+      ctx.fill();
+
+      ctx.fillStyle = textMuted;
+      ctx.font = '12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+      ctx.fillText('Gross Earnings', 55, 243);
+      ctx.fillText('Total Deductions', 325, 243);
+
+      ctx.fillStyle = textColor;
+      ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+      ctx.fillText(document.getElementById('grossDisplay').textContent, 55, 268);
+
+      ctx.fillStyle = dangerColor;
+      ctx.fillText(document.getElementById('deductionDisplay').textContent, 325, 268);
+
+      // Breakdown Section Header
+      ctx.fillStyle = textMuted;
+      ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+      ctx.fillText('ITEMIZED PAYROLL BREAKDOWN', 40, 320);
+
+      ctx.strokeStyle = isDark ? '#3A3A3C' : '#E5E5EA';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(40, 330);
+      ctx.lineTo(560, 330);
+      ctx.stroke();
+
+      // Itemized Data List
+      const items = [
+        { label: 'Basic Earned Pay', val: document.getElementById('valBasicEarned').textContent, color: textColor },
+        { label: 'Night Differential Premium', val: document.getElementById('valNDBreakdown').textContent, color: successColor },
+        { label: 'Overtime & Rest Day Pay', val: document.getElementById('valOTBreakdown').textContent, color: successColor },
+        { label: 'Holiday Premium', val: document.getElementById('valHolidayBreakdown').textContent, color: '#D97706' },
+        { label: 'SSS Contribution', val: document.getElementById('valGov').textContent, color: dangerColor, active: document.getElementById('incGov').checked },
+        { label: 'PhilHealth', val: document.getElementById('valPhilhealth').textContent, color: dangerColor, active: document.getElementById('incPhilhealth').checked },
+        { label: 'Pag-IBIG', val: document.getElementById('valPagibig').textContent, color: dangerColor, active: document.getElementById('incPagibig').checked },
+        { label: 'Withholding Tax (BIR)', val: document.getElementById('valTax').textContent, color: dangerColor, active: document.getElementById('incTax').checked },
+        { label: 'Other Deductions / Loans', val: document.getElementById('valOther').textContent, color: dangerColor, active: true }
+      ];
+
+      let yPos = 360;
+      items.forEach(item => {
+        ctx.fillStyle = (item.active === false) ? textMuted : textColor;
+        ctx.font = '15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+        ctx.fillText(item.label, 40, yPos);
+
+        ctx.fillStyle = (item.active === false) ? textMuted : item.color;
+        ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+        const valText = (item.active === false) ? 'OFF' : item.val;
+        ctx.fillText(valText, 560 - ctx.measureText(valText).width, yPos);
+
+        yPos += 35;
+      });
+
+      // Footer Timestamp
+      ctx.fillStyle = textMuted;
+      ctx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+      const dateStr = new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+      ctx.fillText(`Generated via Sweldo App • ${dateStr}`, 40, 710);
+
+      // Render Modal Preview & Setup Data URL Download
+      const dataUrl = canvas.toDataURL('image/png');
+      document.getElementById('modalImagePreview').src = dataUrl;
+      document.getElementById('downloadImgBtn').href = dataUrl;
+      document.getElementById('exportModal').style.display = 'flex';
+    }
+
+    function closeExportModal() {
+      document.getElementById('exportModal').style.display = 'none';
+    }
+
+    function iconSvg(name,className='btn-icon'){return `<svg class="${className}" aria-hidden="true" focusable="false"><use href="#i-${name}"/></svg>`;}
+    function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+    function syncPeriodUI(){
+      const labels={'semi-1':'First Cutoff','semi-2':'Second Cutoff','monthly':'Monthly'};
+      document.getElementById('periodDisplayLabel').textContent=`Estimated Take-Home Pay (${labels[currentPeriod]||labels['semi-1']})`;
+      document.body.classList.toggle('monthly-summary-mode',currentPeriod==='monthly');
+      const map={'1st Cutoff':'semi-1','2nd Cutoff':'semi-2','Monthly':'monthly'};
+      document.querySelectorAll('.segmented-btn').forEach(btn=>btn.classList.toggle('active',map[btn.textContent.trim()]===currentPeriod));
+    }
+    function goToStep(button){
+      document.querySelectorAll('.wizard-step').forEach(b=>b.classList.toggle('active',b===button));
+      document.getElementById(button.dataset.target)?.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+    function toggleFormulaDetails(){document.getElementById('formulaDetails').classList.toggle('show');}
+    function markUnsaved(){const el=document.getElementById('saveStatus');if(el){el.textContent='Unsaved changes';el.className='unsaved-indicator';}}
+    function markSaved(){const el=document.getElementById('saveStatus');if(el){el.textContent='Saved to employee profile';el.className='';}}
+
+    function requestNameDialog(title,defaultValue,onSave){
+      const overlay=document.createElement('div');overlay.className='modal-overlay';overlay.style.display='flex';
+      overlay.innerHTML=`<div class="modal-card" role="dialog" aria-modal="true"><h3>${escapeHtml(title)}</h3><div class="input-group" style="text-align:left;margin-top:12px"><label class="input-label">Name</label><input id="nameDialogInput" maxlength="60" value="${escapeHtml(defaultValue)}"></div><div class="archive-modal-actions"><button class="btn btn-secondary" data-cancel>${iconSvg('x')}Cancel</button><button class="btn btn-primary" data-save>${iconSvg('save')}Save</button></div></div>`;
+      document.body.appendChild(overlay);const input=overlay.querySelector('input');input.focus();input.select();
+      const close=()=>overlay.remove();overlay.querySelector('[data-cancel]').onclick=close;overlay.onclick=e=>{if(e.target===overlay)close();};
+      overlay.querySelector('[data-save]').onclick=()=>{const name=input.value.trim();if(!name)return input.focus();onSave(name);close();};
+      input.onkeydown=e=>{if(e.key==='Enter')overlay.querySelector('[data-save]').click();if(e.key==='Escape')close();};
+    }
+    function saveNewProfile(){
+      requestNameDialog('Save Employee Profile','Regular Shift',name=>{const p=getProfiles();p[name]=captureCurrentFormState();saveProfilesToStorage(p);localStorage.setItem(ACTIVE_KEY,name);updateProfileDropdown();markSaved();});
+    }
+    function updateCurrentProfile(){const name=document.getElementById('profileSelect').value,p=getProfiles();if(!name||!p[name])return;p[name]=captureCurrentFormState();saveProfilesToStorage(p);markSaved();}
+    function savePayrollRuleProfile(){
+      requestNameDialog('Save Employer Payroll Policy','My Company',name=>{const p=getPayrollRuleProfiles();p[name]=readPayrollRuleInputs();savePayrollRuleProfiles(p);localStorage.setItem(ACTIVE_RULES_KEY,name);updatePayrollRulesDropdown();});
+    }
+    function duplicateArchiveRecord(id){const records=getPayrollArchive(),r=records.find(x=>x.id===id);if(!r)return;records.push({...r,id:'pay_'+Date.now(),note:(r.note?`${r.note} • `:'')+'Duplicated',createdAt:new Date().toISOString()});savePayrollArchive(records);renderPayrollArchive();}
+
+    function renderArchivedDeductions(record){
+      const total=Number(record.deductions)||0, breakdown=record.deductionBreakdown;
+      const items=[['SSS','sss'],['PhilHealth','philHealth'],['Pag-IBIG','pagibig'],['Withholding Tax','tax'],['Other / Loans','other']];
+      if(!breakdown||archiveDeductionTotal(breakdown)<=0){
+        return `<div class="archive-deduction-breakdown"><div class="archive-deduction-heading"><span>Deduction breakdown</span><strong>−${fmt(total)}</strong></div><div class="archive-deduction-line"><span>Unitemized deductions</span><strong>−${fmt(total)}</strong></div></div>`;
+      }
+      return `<div class="archive-deduction-breakdown"><div class="archive-deduction-heading"><span>Deduction breakdown</span><strong>−${fmt(total)}</strong></div>${items.map(([label,key])=>`<div class="archive-deduction-line"><span>${label}</span><strong>−${fmt(Number(breakdown[key])||0)}</strong></div>`).join('')}</div>`;
+    }
+
+    function renderPayrollArchive(){
+      const all=getPayrollArchive().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+      const yearEl=document.getElementById('archiveYearFilter'),profileEl=document.getElementById('archiveProfileFilter');
+      const oldYear=yearEl?.value||'',oldProfile=profileEl?.value||'';
+      const years=[...new Set(all.map(r=>String(r.date||'').slice(0,4)).filter(Boolean))].sort().reverse();
+      const profiles=[...new Set(all.map(r=>r.employer).filter(Boolean))].sort();
+      if(yearEl){yearEl.innerHTML='<option value="">All years</option>'+years.map(y=>`<option ${y===oldYear?'selected':''}>${escapeHtml(y)}</option>`).join('');}
+      if(profileEl){profileEl.innerHTML='<option value="">All profiles</option>'+profiles.map(p=>`<option ${p===oldProfile?'selected':''}>${escapeHtml(p)}</option>`).join('');}
+      const q=(document.getElementById('archiveSearch')?.value||'').trim().toLowerCase();
+      const records=all.filter(r=>(!oldYear||String(r.date).startsWith(oldYear))&&(!oldProfile||r.employer===oldProfile)&&(!q||[r.note,r.employer,(r.tags||[]).join(' ')].join(' ').toLowerCase().includes(q)));
+      document.getElementById('archiveRecords').textContent=all.length;document.getElementById('archiveCountBadge').textContent=all.length+' saved';
+      const avg=all.length?all.reduce((s,r)=>s+(Number(r.net)||0),0)/all.length:0,latest=all.length?Number(all[0].net)||0:0;
+      document.getElementById('archiveAverage').textContent=fmt(avg);document.getElementById('archiveLatest').textContent=fmt(latest);
+      const list=document.getElementById('archiveList');
+      if(!records.length){list.innerHTML='<div class="archive-empty">No payroll records match this view.</div>';drawArchiveChart(records);return;}
+      list.innerHTML=records.map(r=>{const eid=encodeURIComponent(String(r.id));const accuracy=r.estimateNet?Math.max(0,100-Math.abs((r.net-r.estimateNet)/(r.net||1))*100):null;return `<div class="archive-item"><button class="archive-toggle" onclick="toggleArchiveItem(this)" aria-expanded="false"><div class="archive-top"><div style="display:flex;align-items:center;min-width:0"><span class="archive-chevron">⌄</span><div><div class="archive-date">${escapeHtml(formatArchiveDate(r.date))}</div><div class="archive-period">${escapeHtml(r.period||'Payroll')} ${r.employer?'• '+escapeHtml(r.employer):''}</div></div></div><div><div class="archive-net">${fmt(Number(r.net)||0)}</div><div style="font-size:11px;color:var(--text-muted);text-align:right">Take-home</div></div></div></button><div class="archive-details-wrap"><div class="archive-details-inner"><div class="archive-details"><div class="archive-detail">Gross Pay<strong>${fmt(Number(r.gross)||0)}</strong></div><div class="archive-detail">Deductions<strong style="color:var(--danger)">−${fmt(Number(r.deductions)||0)}</strong></div><div class="archive-detail">Period<strong>${escapeHtml(r.startDate||'—')} – ${escapeHtml(r.endDate||'—')}</strong></div><div class="archive-detail" style="text-align:right"><button class="archive-action" onclick="editArchiveRecord(decodeURIComponent('${eid}'))">Edit</button><button class="archive-action" onclick="duplicateArchiveRecord(decodeURIComponent('${eid}'))">Duplicate</button><button class="archive-action delete" onclick="deleteArchiveRecord(decodeURIComponent('${eid}'))">Delete</button></div></div>${renderArchivedDeductions(r)}${r.tags?.length?`<div class="archive-note">${r.tags.map(t=>'#'+escapeHtml(t)).join(' ')}</div>`:''}${r.note?`<div class="archive-note">${escapeHtml(r.note)}</div>`:''}${accuracy!==null?`<div class="archive-note">Estimate accuracy: <strong>${accuracy.toFixed(1)}%</strong></div>`:''}</div></div></div>`;}).join('');
+      decorateArchiveActionIcons(list);
+      drawArchiveChart(records);
+    }
+    function decorateArchiveActionIcons(root){
+      root.querySelectorAll('.archive-chevron').forEach(el=>{el.innerHTML=iconSvg('chevron-down');});
+      const icons={Edit:'edit',Duplicate:'copy',Delete:'trash'};
+      root.querySelectorAll('.archive-action').forEach(button=>{
+        const label=button.textContent.trim();
+        if(icons[label]&&!button.querySelector('svg'))button.innerHTML=iconSvg(icons[label])+escapeHtml(label);
+      });
+    }
+    function drawArchiveChart(records){
+      const canvas=document.getElementById('archiveTrendChart');if(!canvas)return;const ctx=canvas.getContext('2d'),dpr=window.devicePixelRatio||1,w=canvas.clientWidth||480,h=150;canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);const data=[...records].sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(-18);ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--border');ctx.beginPath();ctx.moveTo(36,h-25);ctx.lineTo(w-12,h-25);ctx.stroke();if(!data.length){ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text-muted');ctx.font='12px sans-serif';ctx.fillText('Save payroll records to see your net-pay trend.',36,72);return;}const max=Math.max(...data.map(r=>Number(r.net)||0),1);ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--accent');ctx.lineWidth=3;ctx.beginPath();data.forEach((r,i)=>{const x=36+i*((w-52)/Math.max(1,data.length-1)),y=h-25-(Number(r.net)||0)/max*(h-48);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();}
+    function exportArchiveCsv(){
+      const rows=[['Date','Period start','Period end','Period','Employer','Gross','Deductions','SSS','PhilHealth','Pag-IBIG','Withholding Tax','Other / Loans','Net','Salary','Tags','Note'],...getPayrollArchive().map(r=>{const b=r.deductionBreakdown||{};return [r.date,r.startDate,r.endDate,r.period,r.employer,r.gross,r.deductions,b.sss,b.philHealth,b.pagibig,b.tax,b.other,r.net,r.salary,(r.tags||[]).join('|'),r.note];})];
+      const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');downloadBlob(csv,'Sweldo_Payroll_Archive.csv','text/csv;charset=utf-8');
+    }
+    function downloadBlob(content,name,type){const url=URL.createObjectURL(new Blob([content],{type})),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+
+    // Reset Listener
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('Discard unsaved calculator changes and reload this employee profile?')) loadSelectedProfile();
+    });
+
+    document.getElementById('archiveModal').addEventListener('click', (event) => {
+      if (event.target.id === 'archiveModal') closeArchiveModal();
+    });
+
+    document.getElementById('compareModal').addEventListener('click', (event) => {
+      if (event.target.id === 'compareModal') closeCompareModal();
+    });
+
+    // Theme Switcher
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      themeBtn.innerHTML = iconSvg(isDark ? 'moon' : 'sun','');
+      localStorage.setItem('sweldo_theme',isDark?'light':'dark');
+      drawArchiveChart(getPayrollArchive());
+    });
+
+    document.getElementById('payrollRulesBtn')?.addEventListener('click', openPayrollRulesModal);
+    document.getElementById('payrollRulesModal').addEventListener('click', (event) => {
+      if (event.target.id === 'payrollRulesModal') closePayrollRulesModal();
+    });
+
+    updatePayrollRulesDropdown();
+
+    const savedTheme=localStorage.getItem('sweldo_theme')||'light';
+    document.body.setAttribute('data-theme',savedTheme);themeBtn.innerHTML=iconSvg(savedTheme==='dark'?'sun':'moon','');
+    const hasVisited=localStorage.getItem('sweldo_has_visited');
+    const startView=hasVisited?(localStorage.getItem('sweldo_last_view')||'calculator'):'home';
+    localStorage.setItem('sweldo_has_visited','1');
+    showView(startView);
+
+    // Initialize App
+    updateHolidayRateLabel();
+    renderHolidays();
+    renderPayrollArchive();
+    updateProfileDropdown();
+    loadSelectedProfile();
+    syncPeriodUI();
+    if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  </script>
+</body>
+</html>
