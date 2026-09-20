@@ -1822,7 +1822,7 @@
       </div>
       <div class="formula-grid">
         <div><label class="input-label">Regular Overtime</label><div class="rate-input"><input id="ruleRegularOt" type="number" min="0" step="0.01"><span>%</span></div></div>
-        <div><label class="input-label">Night Differential</label><div class="rate-input"><input id="ruleNightDiff" type="number" min="0" step="0.001" value="6.625" inputmode="decimal"><span>%</span></div></div>
+        <div><label class="input-label">Night Differential</label><div class="rate-input"><input id="ruleNightDiff" type="number" min="0" step="0.001" value="10" inputmode="decimal"><span>%</span></div></div>
         <div><label class="input-label">Rest Day</label><div class="rate-input"><input id="ruleRestDay" type="number" min="0" step="0.01"><span>%</span></div></div>
         <div><label class="input-label">Rest Day OT</label><div class="rate-input"><input id="ruleRestOt" type="number" min="0" step="0.01"><span>%</span></div></div>
         <div><label class="input-label">Special Holiday</label><div class="rate-input"><input id="ruleSpecialHoliday" type="number" min="0" step="0.01"><span>% total</span></div></div>
@@ -2642,7 +2642,8 @@
     // ===== Payroll Rules + Backup / Restore =====
     const PAYROLL_RULES_KEY = 'sweldo_payroll_rules_v2';
     const ACTIVE_RULES_KEY = 'sweldo_active_payroll_rule_v2';
-    const DEFAULT_NIGHT_DIFF_PERCENT = 6.625;
+    const NIGHT_DIFF_DEFAULT_MIGRATION_KEY = 'sweldo_nd_default_10_v1';
+    const DEFAULT_NIGHT_DIFF_PERCENT = 10;
     const DEFAULT_PAYROLL_RULES = {
       regularOt: 125, nightDiff: DEFAULT_NIGHT_DIFF_PERCENT, restDay: 130, restOt: 169,
       specialHoliday: 130, regularHoliday: 200, hoursPerDay: 8
@@ -2651,10 +2652,19 @@
     function getPayrollRuleProfiles(){
       try{
         const saved=JSON.parse(localStorage.getItem(PAYROLL_RULES_KEY)||'null');
-        if(saved&&typeof saved==='object'&&!Array.isArray(saved)) return saved;
+        if(saved&&typeof saved==='object'&&!Array.isArray(saved)) {
+          if(!localStorage.getItem(NIGHT_DIFF_DEFAULT_MIGRATION_KEY)) {
+            const standard=saved['Default / PH Standard'];
+            if(standard&&Number(standard.nightDiff)===6.625)standard.nightDiff=DEFAULT_NIGHT_DIFF_PERCENT;
+            localStorage.setItem(PAYROLL_RULES_KEY,JSON.stringify(saved));
+            localStorage.setItem(NIGHT_DIFF_DEFAULT_MIGRATION_KEY,'1');
+          }
+          return saved;
+        }
       }catch(e){}
       const defaults={'Default / PH Standard':{...DEFAULT_PAYROLL_RULES}};
       localStorage.setItem(PAYROLL_RULES_KEY,JSON.stringify(defaults));
+      localStorage.setItem(NIGHT_DIFF_DEFAULT_MIGRATION_KEY,'1');
       return defaults;
     }
     function savePayrollRuleProfiles(p){localStorage.setItem(PAYROLL_RULES_KEY,JSON.stringify(p));}
