@@ -4,7 +4,7 @@
 
     <link rel="icon" type="image/png" href="SLogo.png">
     <link rel="manifest" href="manifest.webmanifest">
-    <meta name="theme-color" content="#2454E0">
+    <meta name="theme-color" id="themeColorMeta" content="#F3F5FA">
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -1440,6 +1440,152 @@
       .result-dock.show { display:flex!important; }
       body { padding-bottom:172px!important; }
     }
+
+    /* Flat workspace refresh: hierarchy comes from spacing and dividers, not nested cards. */
+    body {
+      min-height:100dvh;
+      padding-bottom:calc(118px + env(safe-area-inset-bottom))!important;
+      background:var(--bg);
+    }
+    .header {
+      height:calc(58px + env(safe-area-inset-top))!important;
+      padding:calc(8px + env(safe-area-inset-top)) 14px 8px!important;
+      background:color-mix(in srgb,var(--bg) 90%,transparent)!important;
+      border-bottom:0!important;
+      box-shadow:none!important;
+    }
+    .app-view,#homeView {
+      padding-top:calc(58px + env(safe-area-inset-top))!important;
+    }
+    .container { padding-left:16px; padding-right:16px; }
+    .view-title { margin-top:16px; font-size:24px; letter-spacing:-.65px; }
+    .view-subtitle { margin-bottom:16px; font-size:12.5px; }
+    .status-strip {
+      border:0;
+      border-radius:0;
+      border-bottom:1px solid var(--border);
+      background:transparent;
+      padding:10px 0 14px;
+    }
+    .section-title {
+      margin:24px 0 4px!important;
+      padding:0;
+      font-size:12px!important;
+      letter-spacing:.055em;
+    }
+    .flow-section { border-bottom:1px solid var(--border); padding-bottom:8px; }
+    .flow-section:last-child { border-bottom:0; }
+    .card {
+      margin:0!important;
+      padding:14px 0 20px!important;
+      border:0!important;
+      border-radius:0!important;
+      background:transparent!important;
+      box-shadow:none!important;
+    }
+    .desktop-profile-panel .card { border-bottom:1px solid var(--border)!important; }
+    .hero-card {
+      border:1px solid color-mix(in srgb,var(--accent) 14%,var(--border));
+      border-radius:22px;
+      box-shadow:0 14px 34px color-mix(in srgb,var(--accent) 12%,transparent);
+      background:linear-gradient(145deg,var(--card),var(--accent-light));
+    }
+    .pill { background:color-mix(in srgb,var(--card) 76%,transparent); border:0; }
+    .wizard-nav {
+      top:calc(65px + env(safe-area-inset-top));
+      margin:8px -4px 12px;
+      padding:4px;
+      border:0;
+      border-bottom:1px solid var(--border);
+      border-radius:0;
+      background:color-mix(in srgb,var(--bg) 93%,transparent);
+      box-shadow:none;
+    }
+    .segmented-control { border:0; border-radius:12px; background:var(--border); }
+    .input-group { margin-bottom:16px; }
+    input,select,textarea { background:color-mix(in srgb,var(--card) 72%,var(--bg)); }
+    .shift-row { border-bottom:1px solid var(--border); border-radius:0; background:transparent; padding:10px 0; }
+    .shift-row:last-child { border-bottom:0; }
+    .breakdown-row { border-bottom:1px solid var(--border); padding:11px 0; }
+    .archive-stat-grid { gap:0; border-block:1px solid var(--border); }
+    .archive-stat { border:0; border-right:1px solid var(--border); border-radius:0; background:transparent; padding:13px 10px; }
+    .archive-stat:last-child { border-right:0; }
+    .archive-list { gap:0; margin-top:8px; }
+    .archive-item { border:0; border-bottom:1px solid var(--border); border-radius:0; background:transparent; padding:4px 0; }
+    .archive-item:hover { border-color:var(--border); background:color-mix(in srgb,var(--accent-light) 42%,transparent); transform:none; }
+    .archive-deduction-breakdown { border-width:1px 0 0; border-radius:0; background:transparent; padding:12px 0 0; }
+    .archive-chart { border:0; border-bottom:1px solid var(--border); border-radius:0; background:transparent; }
+    .home-features { display:block; border-top:1px solid var(--border); margin:8px 0 18px; }
+    .home-feature { display:grid; grid-template-columns:42px 1fr; column-gap:12px; border:0; border-bottom:1px solid var(--border); border-radius:0; background:transparent; padding:15px 2px; box-shadow:none; }
+    .home-feature:hover { transform:none; box-shadow:none; border-color:var(--border); }
+    .home-feature-icon { grid-row:1/3; margin:0; align-self:center; }
+    .home-feature-title { align-self:end; }
+    .home-feature-text { align-self:start; }
+    .home-tip { border-width:1px 0 0; border-radius:0; background:transparent; }
+    .result-dock { bottom:calc(104px + env(safe-area-inset-bottom)); }
+
+    /* Floating navigation inspired by the supplied raised-center reference. */
+    .bottom-nav {
+      bottom:10px!important;
+      width:min(600px,calc(100% - 24px))!important;
+      height:calc(82px + env(safe-area-inset-bottom))!important;
+      padding:8px 12px calc(8px + env(safe-area-inset-bottom))!important;
+      overflow:visible!important;
+      gap:4px!important;
+      border:1px solid color-mix(in srgb,var(--border) 80%,transparent)!important;
+      border-radius:24px!important;
+      background:color-mix(in srgb,var(--card) 94%,transparent)!important;
+      box-shadow:0 16px 42px rgba(20,30,60,.18)!important;
+      backdrop-filter:blur(22px) saturate(1.2)!important;
+      -webkit-backdrop-filter:blur(22px) saturate(1.2)!important;
+    }
+    .nav-item {
+      min-height:58px!important;
+      flex-direction:column!important;
+      gap:1px!important;
+      border-radius:16px!important;
+      font-size:10px!important;
+      background:transparent!important;
+    }
+    .nav-item .nav-icon { width:32px; height:32px; border-radius:12px; transition:transform .18s var(--ease),background .18s var(--ease),box-shadow .18s var(--ease); }
+    .nav-item.active { color:var(--accent); }
+    .nav-item.active:not([data-view="calculator"]) .nav-icon { background:var(--accent-light); }
+    .nav-item[data-view="calculator"] { transform:translateY(-20px); color:var(--accent); }
+    .nav-item[data-view="calculator"] .nav-icon {
+      width:60px;
+      height:60px;
+      border-radius:50%;
+      color:#fff;
+      background:linear-gradient(145deg,var(--accent-2),var(--accent));
+      border:5px solid var(--card);
+      box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 38%,transparent);
+    }
+    .nav-item[data-view="calculator"] .nav-icon svg { width:25px; height:25px; }
+    .nav-item[data-view="calculator"] > span:last-child { margin-top:2px; font-weight:800; }
+    .nav-item[data-view="calculator"]:active .nav-icon { transform:scale(.93); }
+    .nav-item[data-view="calculator"].active .nav-icon { background:linear-gradient(145deg,var(--accent-2),var(--accent)); }
+
+    @media(min-width:900px){
+      body { padding-bottom:132px!important; }
+      .desktop-overview,.desktop-workspace { gap:28px; }
+      .desktop-column-summary { border-left:1px solid var(--border); padding-left:28px; }
+      .desktop-profile-panel .card { border-bottom:0!important; }
+      .bottom-nav { width:520px!important; }
+    }
+    @media(max-width:520px){
+      .container { padding-left:16px; padding-right:16px; }
+      .header-actions { gap:4px!important; }
+      .icon-btn { width:42px!important; height:42px!important; min-width:42px; min-height:42px; background:transparent; }
+      .wizard-nav { margin-left:-8px; margin-right:-8px; }
+      .home-hero { border-radius:0; margin-left:-16px; margin-right:-16px; border-inline:0; box-shadow:none; }
+      .monthly-cutoff-summary { gap:8px; }
+      .archive-toolbar { padding-block:10px; }
+      .result-dock { bottom:calc(102px + env(safe-area-inset-bottom)); padding:7px 9px; border-radius:15px; gap:7px; }
+      .result-dock > div:first-child small:last-child { display:none; }
+      .result-dock > div:first-child strong { font-size:16px; }
+      .result-dock-actions { gap:5px; }
+      .result-dock-actions .btn { min-height:38px; padding:8px 10px; font-size:11px; }
+    }
 </style>
 </head>
 <body>
@@ -1947,7 +2093,7 @@
       <span>Home</span>
     </button>
     <button class="nav-item" data-view="calculator" onclick="showView('calculator')">
-      <span class="nav-icon"><svg aria-hidden="true"><use href="#i-calculator"/></svg></span>
+      <span class="nav-icon"><svg aria-hidden="true"><use href="#i-plus"/></svg></span>
       <span>Calculator</span>
     </button>
     <button class="nav-item" data-view="archive" onclick="showView('archive')">
@@ -2759,6 +2905,7 @@
           }
           if(d.theme==='dark'||d.theme==='light'){
             document.body.setAttribute('data-theme',d.theme);
+            syncThemeChrome(d.theme);
             document.getElementById('themeToggle').innerHTML=iconSvg(d.theme==='dark'?'sun':'moon','');
           }
           updateProfileDropdown();updatePayrollRulesDropdown();loadSelectedProfile();renderPayrollArchive();calculate();
@@ -3267,11 +3414,16 @@
 
     // Theme Switcher
     const themeBtn = document.getElementById('themeToggle');
+    function syncThemeChrome(theme){
+      const meta=document.getElementById('themeColorMeta');
+      if(meta)meta.setAttribute('content',theme==='dark'?'#0A0E16':'#F3F5FA');
+    }
     themeBtn.addEventListener('click', () => {
       const isDark = document.body.getAttribute('data-theme') === 'dark';
       document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
       themeBtn.innerHTML = iconSvg(isDark ? 'moon' : 'sun','');
       localStorage.setItem('sweldo_theme',isDark?'light':'dark');
+      syncThemeChrome(isDark?'light':'dark');
       drawArchiveChart(getPayrollArchive());
     });
 
@@ -3283,7 +3435,7 @@
     updatePayrollRulesDropdown();
 
     const savedTheme=localStorage.getItem('sweldo_theme')||'light';
-    document.body.setAttribute('data-theme',savedTheme);themeBtn.innerHTML=iconSvg(savedTheme==='dark'?'sun':'moon','');
+    document.body.setAttribute('data-theme',savedTheme);themeBtn.innerHTML=iconSvg(savedTheme==='dark'?'sun':'moon','');syncThemeChrome(savedTheme);
     const hasVisited=localStorage.getItem('sweldo_has_visited');
     const startView=hasVisited?(localStorage.getItem('sweldo_last_view')||'calculator'):'home';
     localStorage.setItem('sweldo_has_visited','1');
