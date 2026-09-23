@@ -99,7 +99,7 @@
       backdrop-filter: blur(10px);
     }
     .brand-logo { width:30px; height:30px; display:block; border-radius:9px; box-shadow:0 5px 14px rgba(22,63,185,.24); }
-    .home-logo { padding:0; overflow:hidden; background:#071B52; }
+    .home-logo { padding:0; overflow:hidden; background:#FFFFFF; }
     .home-logo img { width:100%; height:100%; display:block; object-fit:cover; }
 
     .brand {
@@ -891,8 +891,8 @@
       width: 66px;
       height: 66px;
       border-radius: 20px;
-      background: linear-gradient(155deg, var(--accent), var(--accent-2));
-      color: #fff;
+      background: #fff;
+      color: var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -3225,9 +3225,9 @@
       ctx.globalAlpha=.12;ctx.fillStyle=cyan;ctx.beginPath();ctx.arc(650,24,220,0,Math.PI*2);ctx.fill();ctx.restore();
 
       const logo=document.querySelector('.brand-logo');
-      const logoFill=ctx.createLinearGradient(52,50,110,108);logoFill.addColorStop(0,'#287BFF');logoFill.addColorStop(1,'#081B55');rounded(52,50,58,58,16,logoFill);
+      rounded(52,50,58,58,16,white);
       if(location.protocol!=='file:'&&logo&&logo.complete&&logo.naturalWidth){ctx.save();ctx.beginPath();ctx.roundRect(52,50,58,58,16);ctx.clip();ctx.drawImage(logo,52,50,58,58);ctx.restore();}
-      else{ctx.fillStyle=white;ctx.font=`900 30px ${font}`;ctx.fillText('S',70,89);ctx.lineWidth=2.4;ctx.strokeStyle=white;ctx.beginPath();ctx.moveTo(64,78);ctx.lineTo(94,78);ctx.moveTo(64,84);ctx.lineTo(94,84);ctx.stroke();}
+      else{ctx.fillStyle=blue;ctx.font=`900 30px ${font}`;ctx.fillText('S',70,89);ctx.lineWidth=2.4;ctx.strokeStyle=navy;ctx.beginPath();ctx.moveTo(64,78);ctx.lineTo(94,78);ctx.moveTo(64,84);ctx.lineTo(94,84);ctx.stroke();}
       ctx.fillStyle=white;ctx.font=`800 27px ${font}`;ctx.fillText('Sweldo',126,78);
       ctx.fillStyle='rgba(255,255,255,.68)';ctx.font=`700 11px ${font}`;ctx.fillText(`PAYROLL ESTIMATE  •  v${APP_VERSION}`,126,100);
       ctx.font=`700 12px ${font}`;rightText(dateText,668,76);ctx.font=`500 11px ${font}`;rightText(periodText,668,98);
