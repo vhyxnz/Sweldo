@@ -3,6 +3,7 @@
 <head>
 
     <link rel="icon" type="image/png" href="SLogo.png">
+    <link rel="apple-touch-icon" href="Sweldo Logo.png">
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" id="themeColorMeta" content="#F3F5FA">
 
@@ -97,6 +98,9 @@
       z-index: 10;
       backdrop-filter: blur(10px);
     }
+    .brand-logo { width:30px; height:30px; display:block; border-radius:9px; box-shadow:0 5px 14px rgba(22,63,185,.24); }
+    .home-logo { padding:0; overflow:hidden; background:#071B52; }
+    .home-logo img { width:100%; height:100%; display:block; object-fit:cover; }
 
     .brand {
       font-size: 19px;
@@ -991,6 +995,7 @@
     .home-tip strong {
       color: var(--text);
     }
+    .app-version { display:block; margin-top:8px; color:var(--text-muted); font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
 
     .view-title {
       font-size: 21px;
@@ -1586,6 +1591,9 @@
       .result-dock-actions { gap:5px; }
       .result-dock-actions .btn { min-height:38px; padding:8px 10px; font-size:11px; }
     }
+    .modal-overlay { z-index:1200; }
+    #exportModal { padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom)); }
+    #exportModal .modal-card { max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); overflow:auto; overscroll-behavior:contain; }
 </style>
 </head>
 <body>
@@ -1621,7 +1629,7 @@
   </svg>
 
   <div class="header">
-    <div class="brand">Sweldo<span>.</span></div>
+    <div class="brand"><img class="brand-logo" src="SLogo.png" alt=""><div class="brand-text">Sweldo<span>.</span></div></div>
     <div class="header-actions">
       <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme"><svg aria-hidden="true"><use href="#i-moon"/></svg></button>
       <button class="icon-btn" id="payrollRulesBtn" title="Payroll rules" aria-label="Open payroll rules"><svg aria-hidden="true"><use href="#i-settings"/></svg></button>
@@ -1633,7 +1641,7 @@
   <div class="container app-view active" id="homeView">
     <div class="home-view">
       <div class="home-hero">
-        <div class="home-logo">₱</div>
+        <div class="home-logo"><img src="Sweldo Logo.png" alt="Sweldo logo"></div>
         <div class="home-title">Welcome to <span>Sweldo.</span></div>
         <div class="home-subtitle">
           A simple Philippine salary calculator built to help you estimate your
@@ -1668,6 +1676,7 @@
       <div class="home-tip">
         <strong>Sweldo.</strong> Your salary, simplified. Use the calculator for estimates;
         actual payroll may vary based on your employer's policies and payroll rules.
+        <span class="app-version" id="appVersionLabel">Version 1.5.0</span>
       </div>
     </div>
   </div>
@@ -2025,8 +2034,8 @@
   <!-- Export Modal -->
   <div class="modal-overlay" id="exportModal">
     <div class="modal-card">
-      <div style="font-weight:800; font-size:16px; margin-bottom: 5px;">Summary Image Ready</div>
-      <div style="font-size:11.5px; color: var(--text-muted); line-height:1.5;">Tap Download or press &amp; hold image to Save to Photos</div>
+      <div style="font-weight:800; font-size:16px; margin-bottom: 5px;">Premium Payslip Ready</div>
+      <div style="font-size:11.5px; color: var(--text-muted); line-height:1.5;">Download the image or press and hold it to save to Photos.</div>
       <img id="modalImagePreview" alt="Estimated Payroll Graphic">
       <div style="display:flex; gap:8px;">
         <button class="btn btn-secondary" onclick="closeExportModal()"><svg class="btn-icon" aria-hidden="true"><use href="#i-x"/></svg>Close</button>
@@ -2153,6 +2162,9 @@
 
 
   <script>
+
+    const APP_VERSION = '1.5.0';
+    document.getElementById('appVersionLabel').textContent=`Version ${APP_VERSION}`;
 
     function showView(view) {
       const views = {
@@ -3189,132 +3201,74 @@
       window.currentPayrollResult=monthly;
     }
 
-    // Canvas Summary Image Generation
+    // Premium branded payslip image generation.
     function generateSummaryGraphic() {
-      const canvas = document.getElementById('summaryCanvas');
-      const ctx = canvas.getContext('2d');
+      calculate();
+      const canvas=document.getElementById('summaryCanvas'),ctx=canvas.getContext('2d');
+      const width=720,height=980; canvas.width=width;canvas.height=height;
+      const navy='#06163D',blue='#2454E0',cyan='#62B6FF',ink='#10182B',muted='#69738A',line='#E3E8F1';
+      const pale='#F4F7FC',danger='#D83B45',success='#087A4B',white='#FFFFFF';
+      const font='-apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+      const activeProfile=document.getElementById('profileSelect').value||'Default Profile';
+      const periodText=currentPeriod==='monthly'?'Monthly Total':(currentPeriod==='semi-2'?'Second Cutoff':'First Cutoff');
+      const generated=new Date();
+      const dateText=generated.toLocaleDateString('en-PH',{month:'long',day:'numeric',year:'numeric'});
+      const value=id=>document.getElementById(id)?.textContent||'₱0.00';
+      const rightText=(text,x,y)=>ctx.fillText(text,x-ctx.measureText(text).width,y);
+      const rounded=(x,y,w,h,r,fill)=>{ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();};
+      const divider=(x1,y,x2)=>{ctx.strokeStyle=line;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();};
 
-      const width = 600;
-      const height = 750;
-      canvas.width = width;
-      canvas.height = height;
+      ctx.fillStyle='#EAF0FA';ctx.fillRect(0,0,width,height);
+      rounded(24,24,672,932,28,white);
+      const header=ctx.createLinearGradient(24,24,696,240);header.addColorStop(0,navy);header.addColorStop(.62,'#0A2B7A');header.addColorStop(1,blue);
+      ctx.save();ctx.beginPath();ctx.roundRect(24,24,672,226,[28,28,0,0]);ctx.clip();ctx.fillStyle=header;ctx.fillRect(24,24,672,226);
+      ctx.globalAlpha=.12;ctx.fillStyle=cyan;ctx.beginPath();ctx.arc(650,24,220,0,Math.PI*2);ctx.fill();ctx.restore();
 
-      const activeProfileName = document.getElementById('profileSelect').value || "Default";
-      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      const logo=document.querySelector('.brand-logo');
+      const logoFill=ctx.createLinearGradient(52,50,110,108);logoFill.addColorStop(0,'#287BFF');logoFill.addColorStop(1,'#081B55');rounded(52,50,58,58,16,logoFill);
+      if(location.protocol!=='file:'&&logo&&logo.complete&&logo.naturalWidth){ctx.save();ctx.beginPath();ctx.roundRect(52,50,58,58,16);ctx.clip();ctx.drawImage(logo,52,50,58,58);ctx.restore();}
+      else{ctx.fillStyle=white;ctx.font=`900 30px ${font}`;ctx.fillText('S',70,89);ctx.lineWidth=2.4;ctx.strokeStyle=white;ctx.beginPath();ctx.moveTo(64,78);ctx.lineTo(94,78);ctx.moveTo(64,84);ctx.lineTo(94,84);ctx.stroke();}
+      ctx.fillStyle=white;ctx.font=`800 27px ${font}`;ctx.fillText('Sweldo',126,78);
+      ctx.fillStyle='rgba(255,255,255,.68)';ctx.font=`700 11px ${font}`;ctx.fillText(`PAYROLL ESTIMATE  •  v${APP_VERSION}`,126,100);
+      ctx.font=`700 12px ${font}`;rightText(dateText,668,76);ctx.font=`500 11px ${font}`;rightText(periodText,668,98);
 
-      // Colors
-      const bgColor = isDark ? '#1C1C1E' : '#FFFFFF';
-      const textColor = isDark ? '#FFFFFF' : '#121A2C';
-      const textMuted = '#8E8E93';
-      const accentColor = '#007AFF';
-      const cardBg = isDark ? '#2C2C2E' : '#F2F2F7';
-      const dangerColor = '#FF3B30';
-      const successColor = '#34C759';
+      ctx.fillStyle='rgba(255,255,255,.72)';ctx.font=`700 11px ${font}`;ctx.fillText('ESTIMATED TAKE-HOME PAY',52,150);
+      ctx.fillStyle=white;ctx.font=`800 46px ${font}`;ctx.fillText(value('netPayDisplay'),52,202);
+      ctx.fillStyle='rgba(255,255,255,.72)';ctx.font=`500 12px ${font}`;rightText(activeProfile,668,199);
 
-      // Draw Background
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle=muted;ctx.font=`800 11px ${font}`;ctx.fillText('PAY SUMMARY',52,292);
+      rounded(52,310,296,88,16,pale);rounded(372,310,296,88,16,pale);
+      ctx.fillStyle=muted;ctx.font=`600 12px ${font}`;ctx.fillText('Gross earnings',70,340);ctx.fillText('Total deductions',390,340);
+      ctx.fillStyle=ink;ctx.font=`800 23px ${font}`;ctx.fillText(value('grossDisplay'),70,376);
+      ctx.fillStyle=danger;ctx.fillText(value('deductionDisplay'),390,376);
 
-      // Title Section
-      ctx.fillStyle = textColor;
-      ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-      ctx.fillText('Estimated Payroll', 40, 50);
-
-      ctx.fillStyle = textMuted;
-      ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-      const periodText = currentPeriod === 'monthly' ? 'Full Monthly Pay' : (currentPeriod === 'semi-2' ? 'Second Semi-Monthly Cutoff' : 'First Semi-Monthly Cutoff');
-      ctx.fillText(`Preset Profile: ${activeProfileName} • (${periodText})`, 40, 75);
-
-      // Net Pay Hero Box
-      ctx.fillStyle = cardBg;
-      ctx.beginPath();
-      ctx.roundRect(40, 95, 520, 118, 16);
-      ctx.fill();
-
-      ctx.fillStyle = textMuted;
-      ctx.font = '600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-      ctx.fillText('ESTIMATED TAKE-HOME PAY', 60, 125);
-
-      const takeHomeText = document.getElementById('netPayDisplay').textContent || '₱0.00';
-      ctx.save();
-      ctx.fillStyle = accentColor;
-      ctx.font = '700 38px Arial, Helvetica, sans-serif';
-      ctx.textBaseline = 'alphabetic';
-      ctx.fillText(takeHomeText, 60, 173);
-      ctx.restore();
-
-      // Summary Gross vs Deductions Pill Cards
-      ctx.fillStyle = cardBg;
-      ctx.beginPath();
-      ctx.roundRect(40, 220, 250, 65, 12);
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.roundRect(310, 220, 250, 65, 12);
-      ctx.fill();
-
-      ctx.fillStyle = textMuted;
-      ctx.font = '12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-      ctx.fillText('Gross Earnings', 55, 243);
-      ctx.fillText('Total Deductions', 325, 243);
-
-      ctx.fillStyle = textColor;
-      ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-      ctx.fillText(document.getElementById('grossDisplay').textContent, 55, 268);
-
-      ctx.fillStyle = dangerColor;
-      ctx.fillText(document.getElementById('deductionDisplay').textContent, 325, 268);
-
-      // Breakdown Section Header
-      ctx.fillStyle = textMuted;
-      ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-      ctx.fillText('ITEMIZED PAYROLL BREAKDOWN', 40, 320);
-
-      ctx.strokeStyle = isDark ? '#3A3A3C' : '#E5E5EA';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(40, 330);
-      ctx.lineTo(560, 330);
-      ctx.stroke();
-
-      // Itemized Data List
-      const items = [
-        { label: 'Basic Earned Pay', val: document.getElementById('valBasicEarned').textContent, color: textColor },
-        { label: 'Night Differential Premium', val: document.getElementById('valNDBreakdown').textContent, color: successColor },
-        { label: 'Overtime & Rest Day Pay', val: document.getElementById('valOTBreakdown').textContent, color: successColor },
-        { label: 'Holiday Premium', val: document.getElementById('valHolidayBreakdown').textContent, color: '#D97706' },
-        { label: 'SSS Contribution', val: document.getElementById('valGov').textContent, color: dangerColor, active: document.getElementById('incGov').checked },
-        { label: 'PhilHealth', val: document.getElementById('valPhilhealth').textContent, color: dangerColor, active: document.getElementById('incPhilhealth').checked },
-        { label: 'Pag-IBIG', val: document.getElementById('valPagibig').textContent, color: dangerColor, active: document.getElementById('incPagibig').checked },
-        { label: 'Withholding Tax (BIR)', val: document.getElementById('valTax').textContent, color: dangerColor, active: document.getElementById('incTax').checked },
-        { label: 'Other Deductions / Loans', val: document.getElementById('valOther').textContent, color: dangerColor, active: true }
+      const earnings=[['Basic earned pay',value('valBasicEarned')],['Night differential',value('valNDBreakdown')],['Overtime & rest day',value('valOTBreakdown')],['Holiday premium',value('valHolidayBreakdown')]];
+      const deductions=[
+        ['SSS contribution',document.getElementById('incGov').checked?value('valGov'):'OFF'],
+        ['PhilHealth',document.getElementById('incPhilhealth').checked?value('valPhilhealth'):'OFF'],
+        ['Pag-IBIG',document.getElementById('incPagibig').checked?value('valPagibig'):'OFF'],
+        ['Withholding tax',document.getElementById('incTax').checked?value('valTax'):'OFF'],
+        ['Other / loans',value('valOther')]
       ];
+      ctx.fillStyle=ink;ctx.font=`800 14px ${font}`;ctx.fillText('Earnings',52,452);ctx.fillText('Deductions',372,452);
+      ctx.fillStyle=success;ctx.fillRect(52,462,44,3);ctx.fillStyle=danger;ctx.fillRect(372,462,44,3);
+      const drawRows=(rows,x,right,yStart,color)=>rows.forEach((row,i)=>{const y=yStart+i*52;ctx.fillStyle=muted;ctx.font=`500 12px ${font}`;ctx.fillText(row[0],x,y);ctx.fillStyle=row[1]==='OFF'?muted:color;ctx.font=`750 14px ${font}`;rightText(row[1],right,y);divider(x,y+18,right);});
+      drawRows(earnings,52,348,500,ink);drawRows(deductions,372,668,500,danger);
 
-      let yPos = 360;
-      items.forEach(item => {
-        ctx.fillStyle = (item.active === false) ? textMuted : textColor;
-        ctx.font = '15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-        ctx.fillText(item.label, 40, yPos);
+      rounded(52,790,616,92,18,'#EEF3FF');
+      ctx.fillStyle=muted;ctx.font=`700 11px ${font}`;ctx.fillText('NET PAY',72,822);
+      ctx.fillStyle=blue;ctx.font=`850 31px ${font}`;ctx.fillText(value('netPayDisplay'),72,860);
+      ctx.fillStyle=muted;ctx.font=`500 11px ${font}`;rightText('Gross less total deductions',648,846);
 
-        ctx.fillStyle = (item.active === false) ? textMuted : item.color;
-        ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-        const valText = (item.active === false) ? 'OFF' : item.val;
-        ctx.fillText(valText, 560 - ctx.measureText(valText).width, yPos);
+      divider(52,908,668);
+      ctx.fillStyle=muted;ctx.font=`500 10px ${font}`;ctx.fillText('Estimate only • Actual payroll may vary according to employer policy.',52,932);
+      ctx.font=`700 10px ${font}`;rightText(`SWELDO v${APP_VERSION}`,668,932);
 
-        yPos += 35;
-      });
-
-      // Footer Timestamp
-      ctx.fillStyle = textMuted;
-      ctx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-      const dateStr = new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
-      ctx.fillText(`Generated via Sweldo App • ${dateStr}`, 40, 710);
-
-      // Render Modal Preview & Setup Data URL Download
-      const dataUrl = canvas.toDataURL('image/png');
-      document.getElementById('modalImagePreview').src = dataUrl;
-      document.getElementById('downloadImgBtn').href = dataUrl;
-      document.getElementById('exportModal').style.display = 'flex';
+      const dataUrl=canvas.toDataURL('image/png');
+      document.getElementById('modalImagePreview').src=dataUrl;
+      const download=document.getElementById('downloadImgBtn');download.href=dataUrl;
+      download.download=`Sweldo_Payslip_${currentPeriod}_${generated.toISOString().slice(0,10)}.png`;
+      document.getElementById('exportModal').style.display='flex';
     }
 
     function closeExportModal() {
