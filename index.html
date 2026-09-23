@@ -3227,7 +3227,7 @@
       const logo=document.querySelector('.brand-logo');
       rounded(52,50,58,58,16,white);
       if(location.protocol!=='file:'&&logo&&logo.complete&&logo.naturalWidth){ctx.save();ctx.beginPath();ctx.roundRect(52,50,58,58,16);ctx.clip();ctx.drawImage(logo,52,50,58,58);ctx.restore();}
-      else{ctx.fillStyle=blue;ctx.font=`900 30px ${font}`;ctx.fillText('S',70,89);ctx.lineWidth=2.4;ctx.strokeStyle=navy;ctx.beginPath();ctx.moveTo(64,78);ctx.lineTo(94,78);ctx.moveTo(64,84);ctx.lineTo(94,84);ctx.stroke();}
+      else{ctx.fillStyle=navy;ctx.font=`italic 900 34px ${font}`;ctx.fillText('S',65,91);ctx.fillStyle=blue;ctx.beginPath();ctx.arc(98,91,4,0,Math.PI*2);ctx.fill();}
       ctx.fillStyle=white;ctx.font=`800 27px ${font}`;ctx.fillText('Sweldo',126,78);
       ctx.fillStyle='rgba(255,255,255,.68)';ctx.font=`700 11px ${font}`;ctx.fillText(`PAYROLL ESTIMATE  •  v${APP_VERSION}`,126,100);
       ctx.font=`700 12px ${font}`;rightText(dateText,668,76);ctx.font=`500 11px ${font}`;rightText(periodText,668,98);
