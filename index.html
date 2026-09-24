@@ -1657,14 +1657,14 @@
     .archive-pay-amount strong { display:block; color:var(--accent); font-size:17px; font-variant-numeric:tabular-nums; }
     .archive-view-label { display:inline-flex; align-items:center; gap:4px; margin-top:4px; color:var(--text-muted); font-size:10px; font-weight:800; transition:color .15s var(--ease); }
     .archive-view-label svg { width:13px; height:13px; }
-    .payslip-viewer { width:min(520px,100%); max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); padding:0!important; overflow:hidden; text-align:left!important; border-radius:24px!important; }
-    .payslip-scroll { overflow:auto; overscroll-behavior:contain; }
+    .payslip-viewer { display:flex; flex-direction:column; width:min(520px,100%); height:min(760px,calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))); max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); padding:0!important; overflow:hidden; text-align:left!important; border-radius:24px!important; }
+    .payslip-scroll { flex:1 1 auto; min-height:0; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
     .payslip-hero { position:relative; padding:24px 22px 22px; color:#fff; background:linear-gradient(145deg,#071B52,#0A2B7A 64%,#2563EB); }
     .payslip-hero-top { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
     .payslip-brand { display:flex; align-items:center; gap:9px; font-size:17px; font-weight:900; }
     .payslip-brand img { width:34px!important; height:34px!important; margin:0!important; border-radius:10px!important; object-fit:cover; background:#fff; }
     .payslip-close { width:38px; height:38px; border:1px solid rgba(255,255,255,.22); border-radius:12px; display:grid; place-items:center; color:#fff; background:rgba(255,255,255,.1); cursor:pointer; }
-    .payslip-close svg { width:18px; height:18px; }
+    .payslip-close svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; pointer-events:none; }
     .payslip-kicker { margin-top:24px; color:rgba(255,255,255,.7); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
     .payslip-net { margin-top:4px; font-size:38px; font-weight:900; letter-spacing:-1.5px; font-variant-numeric:tabular-nums; }
     .payslip-date { margin-top:6px; color:rgba(255,255,255,.72); font-size:12px; }
@@ -1684,8 +1684,27 @@
     .payslip-note-box { margin-top:14px; padding:12px 13px; border-radius:12px; background:var(--accent-light); color:var(--text-muted); font-size:11.5px; line-height:1.5; }
     .payslip-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
     .payslip-tag { padding:5px 8px; border-radius:999px; color:var(--accent); background:var(--accent-light); font-size:10px; font-weight:800; }
-    .payslip-viewer-actions { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:13px 22px calc(13px + env(safe-area-inset-bottom)); border-top:1px solid var(--border); background:var(--card); }
+    .payslip-viewer-actions { flex:0 0 auto; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:13px 22px calc(13px + env(safe-area-inset-bottom)); border-top:1px solid var(--border); background:var(--card); box-shadow:0 -8px 22px color-mix(in srgb,var(--bg) 45%,transparent); }
     .payslip-viewer-actions .btn { min-width:0; min-height:42px; padding:8px; font-size:11px; }
+    .settings-modal-card { max-width:440px; padding:0!important; overflow:hidden; text-align:left!important; }
+    .settings-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:19px 20px 15px; border-bottom:1px solid var(--border); }
+    .settings-header h3 { margin:0; font-size:18px; font-weight:900; }
+    .settings-close { width:38px; height:38px; border:1px solid var(--border); border-radius:12px; display:grid; place-items:center; color:var(--text); background:var(--bg); cursor:pointer; }
+    .settings-close svg { width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; }
+    .settings-body { max-height:min(650px,calc(100dvh - 150px)); overflow:auto; padding:4px 20px 20px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
+    .settings-group { padding:17px 0; border-bottom:1px solid var(--border); }
+    .settings-group:last-child { border-bottom:0; }
+    .settings-label { margin-bottom:10px; color:var(--text-muted); font-size:10px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+    .settings-row { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:7px 0; }
+    .settings-row-copy { min-width:0; }
+    .settings-row-copy strong { display:block; font-size:13px; }
+    .settings-row-copy span { display:block; margin-top:3px; color:var(--text-muted); font-size:10.5px; line-height:1.4; }
+    .settings-row .btn-secondary,.settings-row .btn-primary { flex:0 0 auto; min-height:40px; padding:8px 11px; font-size:11px; }
+    .settings-version { display:inline-flex; align-items:center; padding:6px 9px; border-radius:999px; color:var(--accent); background:var(--accent-light); font-size:11px; font-weight:900; }
+    .update-status { margin-top:10px; padding:10px 11px; border-radius:11px; background:var(--bg); color:var(--text-muted); font-size:10.5px; line-height:1.45; }
+    .update-status.success { color:var(--success); background:var(--success-light); }
+    .update-status.available { color:var(--accent); background:var(--accent-light); }
+    .update-status.error { color:var(--danger); background:var(--danger-light); }
     @media(max-width:420px){
       .payslip-viewer { border-radius:20px!important; }
       .payslip-hero { padding:20px 18px; }
@@ -1733,7 +1752,7 @@
     <div class="brand"><img class="brand-logo" src="SLogo.png" alt=""><div class="brand-text">Sweldo<span>.</span></div></div>
     <div class="header-actions">
       <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme"><svg aria-hidden="true"><use href="#i-moon"/></svg></button>
-      <button class="icon-btn" id="payrollRulesBtn" title="Payroll rules" aria-label="Open payroll rules"><svg aria-hidden="true"><use href="#i-settings"/></svg></button>
+      <button class="icon-btn" id="payrollRulesBtn" title="Settings" aria-label="Open settings"><svg aria-hidden="true"><use href="#i-settings"/></svg></button>
       <button class="icon-btn" id="resetBtn" title="Reset inputs" aria-label="Reset calculator inputs"><svg aria-hidden="true"><use href="#i-reset"/></svg></button>
     </div>
   </div>
@@ -1777,7 +1796,7 @@
       <div class="home-tip">
         <strong>Sweldo.</strong> Your salary, simplified. Use the calculator for estimates;
         actual payroll may vary based on your employer's policies and payroll rules.
-        <span class="app-version" id="appVersionLabel">Version 1.5.0</span>
+        <span class="app-version" id="appVersionLabel">Version 1.6.0</span>
       </div>
     </div>
   </div>
@@ -2096,6 +2115,53 @@
     </div>
   </div>
 
+  <!-- App Settings Modal -->
+  <div class="modal-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-card settings-modal-card">
+      <div class="settings-header">
+        <div><h3 id="settingsTitle">Settings</h3><span style="display:block;margin-top:3px;color:var(--text-muted);font-size:10.5px;">Manage payroll rules, backups, and updates.</span></div>
+        <button class="settings-close" onclick="closeSettingsModal()" aria-label="Close settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+      </div>
+      <div class="settings-body">
+        <section class="settings-group">
+          <div class="settings-label">Payroll</div>
+          <div class="settings-row">
+            <div class="settings-row-copy"><strong>Company payroll rules</strong><span>Adjust overtime, night differential, holiday, and workday rates.</span></div>
+            <button class="btn-secondary" onclick="openPayrollRulesFromSettings()"><svg class="btn-icon" aria-hidden="true"><use href="#i-settings"/></svg>Open</button>
+          </div>
+        </section>
+        <section class="settings-group">
+          <div class="settings-label">Data & backup</div>
+          <div class="settings-row">
+            <div class="settings-row-copy"><strong>Export backup</strong><span>Save profiles, payroll history, rules, and preferences.</span></div>
+            <button class="btn-secondary" onclick="exportSweldoBackup()"><svg class="btn-icon" aria-hidden="true"><use href="#i-download"/></svg>Export</button>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-copy"><strong>Import backup</strong><span>Restore a previously exported Sweldo JSON backup.</span></div>
+            <button class="btn-secondary" onclick="document.getElementById('sweldoImportFile').click()"><svg class="btn-icon" aria-hidden="true"><use href="#i-upload"/></svg>Import</button>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-copy"><strong>Export payroll CSV</strong><span>Download saved payroll records for spreadsheets or reporting.</span></div>
+            <button class="btn-secondary" onclick="exportArchiveCsv()"><svg class="btn-icon" aria-hidden="true"><use href="#i-file"/></svg>Export</button>
+          </div>
+          <input type="file" id="sweldoImportFile" accept=".json,application/json" style="display:none" onchange="importSweldoBackup(event)">
+        </section>
+        <section class="settings-group">
+          <div class="settings-label">About & updates</div>
+          <div class="settings-row">
+            <div class="settings-row-copy"><strong>Sweldo</strong><span>Philippine salary calculator and payroll archive.</span></div>
+            <span class="settings-version" id="settingsVersion">v1.6.0</span>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-copy"><strong>Software update</strong><span>Check Local Hub or the installed PWA for a newer release.</span></div>
+            <button class="btn-primary" id="checkUpdateBtn" onclick="checkForAppUpdates()"><svg class="btn-icon" aria-hidden="true"><use href="#i-reset"/></svg>Check update</button>
+          </div>
+          <div class="update-status" id="updateStatus" aria-live="polite">You’re using Sweldo v1.6.0.</div>
+        </section>
+      </div>
+    </div>
+  </div>
+
   <!-- Payroll Archive Modal -->
   <div class="modal-overlay archive-modal" id="archiveModal">
     <div class="modal-card">
@@ -2261,12 +2327,6 @@
         <select id="archiveProfileFilter" onchange="renderPayrollArchive()"><option value="">All profiles</option></select>
       </div>
       <canvas id="archiveTrendChart" class="archive-chart" width="480" height="150" aria-label="Net pay trend chart"></canvas>
-      <div class="backup-card-actions">
-        <button class="btn-secondary" onclick="exportSweldoBackup()"><svg class="btn-icon" aria-hidden="true"><use href="#i-download"/></svg>Export Backup</button>
-        <button class="btn-secondary" onclick="document.getElementById('sweldoImportFile').click()"><svg class="btn-icon" aria-hidden="true"><use href="#i-upload"/></svg>Import Backup</button>
-        <button class="btn-secondary" onclick="exportArchiveCsv()"><svg class="btn-icon" aria-hidden="true"><use href="#i-file"/></svg>CSV Export</button>
-      </div>
-      <input type="file" id="sweldoImportFile" accept=".json,application/json" style="display:none" onchange="importSweldoBackup(event)">
       <div id="archiveList" class="archive-list"></div>
       <button class="btn-add" onclick="saveCurrentPayrollToArchive()"><svg class="btn-icon" aria-hidden="true"><use href="#i-save"/></svg>Save Current Payslip</button>
     </div>
@@ -2277,7 +2337,7 @@
 
   <script>
 
-    const APP_VERSION = '1.5.0';
+    const APP_VERSION = '1.6.0';
     document.getElementById('appVersionLabel').textContent=`Version ${APP_VERSION}`;
 
     function showView(view) {
@@ -2996,6 +3056,102 @@
     }
     function resetPayrollRules(){fillPayrollRuleInputs(DEFAULT_PAYROLL_RULES);}
 
+    let pendingAppUpdateVersion='';
+    let appUpdateRequestId='';
+    let appUpdateTimer=0;
+    function compareAppVersions(a,b){
+      const pa=String(a||'0').split('.').map(v=>parseInt(v,10)||0),pb=String(b||'0').split('.').map(v=>parseInt(v,10)||0);
+      for(let i=0;i<Math.max(pa.length,pb.length);i++){const d=(pa[i]||0)-(pb[i]||0);if(d)return d;}
+      return 0;
+    }
+    function setUpdateStatus(message,state=''){
+      const status=document.getElementById('updateStatus');if(!status)return;
+      status.textContent=message;status.className='update-status'+(state?' '+state:'');
+    }
+    function resetUpdateButton(){
+      const button=document.getElementById('checkUpdateBtn');if(!button)return;
+      button.disabled=false;button.dataset.action='check';
+      button.innerHTML=iconSvg('reset')+'Check update';
+    }
+    function openSettingsModal(){
+      document.getElementById('settingsVersion').textContent='v'+APP_VERSION;
+      setUpdateStatus(`You’re using Sweldo v${APP_VERSION}.`);
+      resetUpdateButton();
+      document.getElementById('settingsModal').style.display='flex';
+    }
+    function closeSettingsModal(){document.getElementById('settingsModal').style.display='none';}
+    function openPayrollRulesFromSettings(){closeSettingsModal();openPayrollRulesModal();}
+    async function checkForAppUpdates(){
+      const button=document.getElementById('checkUpdateBtn');
+      if(button?.dataset.action==='install')return installAvailableAppUpdate();
+      if(button){button.disabled=true;button.innerHTML=iconSvg('reset')+'Checking…';}
+      setUpdateStatus('Checking for a newer Sweldo release…');
+      pendingAppUpdateVersion='';
+      if(window.parent!==window){
+        appUpdateRequestId='sweldo-update-'+Date.now();
+        window.parent.postMessage({type:'localhub:check-app-update',requestId:appUpdateRequestId,packageId:'sweldo',currentVersion:APP_VERSION},'*');
+        clearTimeout(appUpdateTimer);
+        appUpdateTimer=setTimeout(()=>{setUpdateStatus('Local Hub did not respond. Open the Local Hub Store to check manually.','error');resetUpdateButton();},7000);
+        return;
+      }
+      if(location.protocol.startsWith('http')){
+        try{
+          const response=await fetch('./version.json?t='+Date.now(),{cache:'no-store'});
+          if(!response.ok)throw new Error();
+          const latest=String((await response.json()).version||APP_VERSION);
+          handleAvailableAppVersion(latest,compareAppVersions(latest,APP_VERSION)>0,'pwa');
+        }catch(error){setUpdateStatus('Could not reach the update service. Try again when online.','error');resetUpdateButton();}
+        return;
+      }
+      setUpdateStatus('Update checks are available when Sweldo is installed through Local Hub or as a PWA.','error');
+      resetUpdateButton();
+    }
+    function handleAvailableAppVersion(version,available,source){
+      clearTimeout(appUpdateTimer);
+      const button=document.getElementById('checkUpdateBtn');
+      if(available){
+        pendingAppUpdateVersion=version;
+        setUpdateStatus(`Sweldo v${version} is available. Install it now to get the latest improvements.`,'available');
+        if(button){button.disabled=false;button.dataset.action='install';button.innerHTML=iconSvg('download')+`Install v${escapeHtml(version)}`;button.dataset.source=source||'';}
+      }else{
+        setUpdateStatus(`Sweldo v${APP_VERSION} is up to date.`,'success');
+        resetUpdateButton();
+      }
+    }
+    async function installAvailableAppUpdate(){
+      const button=document.getElementById('checkUpdateBtn');
+      if(button){button.disabled=true;button.innerHTML=iconSvg('download')+'Installing…';}
+      setUpdateStatus(`Installing Sweldo v${pendingAppUpdateVersion||'latest'}…`,'available');
+      if(window.parent!==window){
+        appUpdateRequestId='sweldo-install-'+Date.now();
+        window.parent.postMessage({type:'localhub:install-app-update',requestId:appUpdateRequestId,packageId:'sweldo',currentVersion:APP_VERSION},'*');
+        clearTimeout(appUpdateTimer);
+        appUpdateTimer=setTimeout(()=>{setUpdateStatus('The update could not be confirmed. Reopen Local Hub and try again.','error');resetUpdateButton();},12000);
+        return;
+      }
+      try{
+        const registration=await navigator.serviceWorker.getRegistration();
+        if(!registration)throw new Error();
+        let reloading=false;
+        navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!reloading){reloading=true;location.reload();}},{once:true});
+        await registration.update();
+        if(registration.waiting)registration.waiting.postMessage({type:'SKIP_WAITING'});
+        setUpdateStatus('Update installed. Reloading Sweldo…','success');
+        setTimeout(()=>location.reload(),900);
+      }catch(error){setUpdateStatus('The update could not be installed automatically. Try reopening the app.','error');resetUpdateButton();}
+    }
+    window.addEventListener('message',event=>{
+      const data=event.data||{};
+      if(data.requestId!==appUpdateRequestId)return;
+      if(data.type==='localhub:app-update-status'){
+        handleAvailableAppVersion(String(data.latestVersion||APP_VERSION),Boolean(data.available),'localhub');
+      }else if(data.type==='localhub:app-update-result'){
+        clearTimeout(appUpdateTimer);
+        if(data.ok){setUpdateStatus(`Sweldo v${data.version||pendingAppUpdateVersion} is installed. Close and reopen the app to finish updating.`,'success');const button=document.getElementById('checkUpdateBtn');if(button){button.disabled=true;button.innerHTML=iconSvg('check')+'Installed';}}
+        else{setUpdateStatus(data.error||'Local Hub could not install the update.','error');resetUpdateButton();}
+      }
+    });
+
     function exportSweldoBackup(){
       const backup={app:'Sweldo',version:3,exportedAt:new Date().toISOString(),data:{
         profiles:getProfiles(),activeProfile:localStorage.getItem(ACTIVE_KEY),
@@ -3453,7 +3609,7 @@
         <div class="payslip-hero">
           <div class="payslip-hero-top">
             <div class="payslip-brand"><img src="SLogo.png" alt=""><span>Sweldo.</span></div>
-            <button class="payslip-close" onclick="closePayslipViewer()" aria-label="Close payslip viewer"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+            <button class="payslip-close" onclick="closePayslipViewer()" aria-label="Close payslip viewer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
           </div>
           <div class="payslip-kicker">Take-home pay</div>
           <div class="payslip-net">${fmt(Number(record.net)||0)}</div>
@@ -3547,7 +3703,10 @@
       drawArchiveChart(getPayrollArchive());
     });
 
-    document.getElementById('payrollRulesBtn')?.addEventListener('click', openPayrollRulesModal);
+    document.getElementById('payrollRulesBtn')?.addEventListener('click', openSettingsModal);
+    document.getElementById('payrollRulesBtn')?.setAttribute('title','Settings');
+    document.getElementById('payrollRulesBtn')?.setAttribute('aria-label','Open settings');
+    document.getElementById('settingsModal').addEventListener('click',event=>{if(event.target.id==='settingsModal')closeSettingsModal();});
     document.getElementById('payrollRulesModal').addEventListener('click', (event) => {
       if (event.target.id === 'payrollRulesModal') closePayrollRulesModal();
     });
