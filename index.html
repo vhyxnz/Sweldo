@@ -1594,6 +1594,106 @@
     .modal-overlay { z-index:1200; }
     #exportModal { padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom)); }
     #exportModal .modal-card { max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); overflow:auto; overscroll-behavior:contain; }
+
+    /* Stable navigation: identical structure and spacing at every viewport size. */
+    .bottom-nav {
+      left:50%!important;
+      right:auto!important;
+      bottom:max(10px,env(safe-area-inset-bottom))!important;
+      transform:translateX(-50%)!important;
+      width:min(560px,calc(100% - 24px))!important;
+      height:72px!important;
+      padding:7px!important;
+      grid-template-columns:repeat(3,minmax(0,1fr))!important;
+      gap:5px!important;
+      overflow:hidden!important;
+      border:1px solid color-mix(in srgb,var(--border) 86%,transparent)!important;
+      border-radius:22px!important;
+      background:color-mix(in srgb,var(--card) 96%,transparent)!important;
+      box-shadow:0 12px 34px rgba(17,31,67,.16)!important;
+    }
+    .bottom-nav .nav-item,
+    .bottom-nav .nav-item[data-view="calculator"] {
+      min-width:0!important;
+      min-height:56px!important;
+      transform:none!important;
+      flex-direction:column!important;
+      justify-content:center!important;
+      gap:2px!important;
+      padding:4px 6px!important;
+      border-radius:15px!important;
+      background:transparent!important;
+      color:var(--text-muted)!important;
+      font-size:10px!important;
+      line-height:1!important;
+    }
+    .bottom-nav .nav-item .nav-icon,
+    .bottom-nav .nav-item[data-view="calculator"] .nav-icon {
+      width:29px!important;
+      height:29px!important;
+      border:0!important;
+      border-radius:10px!important;
+      background:transparent!important;
+      box-shadow:none!important;
+      color:inherit!important;
+    }
+    .bottom-nav .nav-item .nav-icon svg,
+    .bottom-nav .nav-item[data-view="calculator"] .nav-icon svg { width:20px!important; height:20px!important; }
+    .bottom-nav .nav-item.active {
+      color:var(--accent)!important;
+      background:var(--accent-light)!important;
+    }
+    .bottom-nav .nav-item.active .nav-icon { background:color-mix(in srgb,var(--accent) 10%,transparent)!important; }
+    body { padding-bottom:calc(104px + env(safe-area-inset-bottom))!important; }
+    .result-dock { bottom:calc(92px + env(safe-area-inset-bottom))!important; }
+
+    /* Saved payslip list and receipt-style viewer. */
+    .archive-pay-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; width:100%; border:0; padding:15px 4px; background:transparent; color:var(--text); text-align:left; cursor:pointer; }
+    .archive-pay-row:hover .archive-view-label { color:var(--accent-2); }
+    .archive-pay-main { min-width:0; }
+    .archive-pay-title { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; }
+    .archive-pay-meta { margin-top:4px; color:var(--text-muted); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .archive-pay-amount { text-align:right; }
+    .archive-pay-amount strong { display:block; color:var(--accent); font-size:17px; font-variant-numeric:tabular-nums; }
+    .archive-view-label { display:inline-flex; align-items:center; gap:4px; margin-top:4px; color:var(--text-muted); font-size:10px; font-weight:800; transition:color .15s var(--ease); }
+    .archive-view-label svg { width:13px; height:13px; }
+    .payslip-viewer { width:min(520px,100%); max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); padding:0!important; overflow:hidden; text-align:left!important; border-radius:24px!important; }
+    .payslip-scroll { overflow:auto; overscroll-behavior:contain; }
+    .payslip-hero { position:relative; padding:24px 22px 22px; color:#fff; background:linear-gradient(145deg,#071B52,#0A2B7A 64%,#2563EB); }
+    .payslip-hero-top { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+    .payslip-brand { display:flex; align-items:center; gap:9px; font-size:17px; font-weight:900; }
+    .payslip-brand img { width:34px!important; height:34px!important; margin:0!important; border-radius:10px!important; object-fit:cover; background:#fff; }
+    .payslip-close { width:38px; height:38px; border:1px solid rgba(255,255,255,.22); border-radius:12px; display:grid; place-items:center; color:#fff; background:rgba(255,255,255,.1); cursor:pointer; }
+    .payslip-close svg { width:18px; height:18px; }
+    .payslip-kicker { margin-top:24px; color:rgba(255,255,255,.7); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+    .payslip-net { margin-top:4px; font-size:38px; font-weight:900; letter-spacing:-1.5px; font-variant-numeric:tabular-nums; }
+    .payslip-date { margin-top:6px; color:rgba(255,255,255,.72); font-size:12px; }
+    .payslip-body { padding:20px 22px; }
+    .payslip-identity { padding-bottom:16px; border-bottom:1px solid var(--border); }
+    .payslip-identity strong { display:block; font-size:15px; }
+    .payslip-identity span { display:block; margin-top:4px; color:var(--text-muted); font-size:11px; }
+    .payslip-summary { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0; }
+    .payslip-summary-item { padding:13px; border:1px solid var(--border); border-radius:14px; background:var(--bg); }
+    .payslip-summary-item span { display:block; color:var(--text-muted); font-size:10px; font-weight:700; }
+    .payslip-summary-item strong { display:block; margin-top:5px; font-size:16px; font-variant-numeric:tabular-nums; }
+    .payslip-summary-item.deduction strong { color:var(--danger); }
+    .payslip-section-title { margin:18px 0 7px; color:var(--text-muted); font-size:10px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+    .payslip-line { display:flex; justify-content:space-between; gap:16px; padding:9px 0; border-bottom:1px solid var(--border); color:var(--text-muted); font-size:12px; }
+    .payslip-line strong { color:var(--text); font-variant-numeric:tabular-nums; }
+    .payslip-line.deduction strong { color:var(--danger); }
+    .payslip-note-box { margin-top:14px; padding:12px 13px; border-radius:12px; background:var(--accent-light); color:var(--text-muted); font-size:11.5px; line-height:1.5; }
+    .payslip-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+    .payslip-tag { padding:5px 8px; border-radius:999px; color:var(--accent); background:var(--accent-light); font-size:10px; font-weight:800; }
+    .payslip-viewer-actions { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:13px 22px calc(13px + env(safe-area-inset-bottom)); border-top:1px solid var(--border); background:var(--card); }
+    .payslip-viewer-actions .btn { min-width:0; min-height:42px; padding:8px; font-size:11px; }
+    @media(max-width:420px){
+      .payslip-viewer { border-radius:20px!important; }
+      .payslip-hero { padding:20px 18px; }
+      .payslip-body { padding:18px; }
+      .payslip-net { font-size:33px; }
+      .payslip-viewer-actions { padding-left:18px; padding-right:18px; }
+      .payslip-viewer-actions { grid-template-columns:1fr 1fr; }
+    }
 </style>
 </head>
 <body>
@@ -1626,6 +1726,7 @@
     <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></symbol>
     <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></symbol>
     <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></symbol>
   </svg>
 
   <div class="header">
@@ -2095,6 +2196,19 @@
     </div>
   </div>
 
+  <!-- Saved Payslip Viewer -->
+  <div class="modal-overlay" id="payslipViewerModal" role="dialog" aria-modal="true" aria-labelledby="payslipViewerTitle">
+    <div class="modal-card payslip-viewer">
+      <div class="payslip-scroll" id="payslipViewerContent"></div>
+      <div class="payslip-viewer-actions">
+        <button class="btn btn-secondary" id="payslipViewerDuplicate"><svg class="btn-icon" aria-hidden="true"><use href="#i-copy"/></svg>Duplicate</button>
+        <button class="btn btn-secondary" id="payslipViewerEdit"><svg class="btn-icon" aria-hidden="true"><use href="#i-edit"/></svg>Edit</button>
+        <button class="btn btn-secondary" id="payslipViewerDelete"><svg class="btn-icon" aria-hidden="true"><use href="#i-trash"/></svg>Delete</button>
+        <button class="btn btn-primary" onclick="closePayslipViewer()"><svg class="btn-icon" aria-hidden="true"><use href="#i-x"/></svg>Close</button>
+      </div>
+    </div>
+  </div>
+
 
   <nav class="bottom-nav" aria-label="Main navigation">
     <button class="nav-item active" data-view="home" onclick="showView('home')">
@@ -2102,7 +2216,7 @@
       <span>Home</span>
     </button>
     <button class="nav-item" data-view="calculator" onclick="showView('calculator')">
-      <span class="nav-icon"><svg aria-hidden="true"><use href="#i-plus"/></svg></span>
+      <span class="nav-icon"><svg aria-hidden="true"><use href="#i-calculator"/></svg></span>
       <span>Calculator</span>
     </button>
     <button class="nav-item" data-view="archive" onclick="showView('archive')">
@@ -3318,6 +3432,55 @@
       return `<div class="archive-deduction-breakdown"><div class="archive-deduction-heading"><span>Deduction breakdown</span><strong>−${fmt(total)}</strong></div>${items.map(([label,key])=>`<div class="archive-deduction-line"><span>${label}</span><strong>−${fmt(Number(breakdown[key])||0)}</strong></div>`).join('')}</div>`;
     }
 
+    function closePayslipViewer(){
+      document.getElementById('payslipViewerModal').style.display='none';
+    }
+
+    function openPayslipViewer(id){
+      const record=getPayrollArchive().find(r=>String(r.id)===String(id));
+      if(!record)return;
+      const total=Number(record.deductions)||0;
+      const breakdown=record.deductionBreakdown||{};
+      const itemized=archiveDeductionTotal(breakdown)>0;
+      const deductionItems=itemized
+        ? [['SSS','sss'],['PhilHealth','philHealth'],['Pag-IBIG','pagibig'],['Withholding Tax','tax'],['Other / Loans','other']]
+        : [['Unitemized deductions',null]];
+      const periodDates=record.startDate||record.endDate
+        ? `${record.startDate?formatArchiveDate(record.startDate):'—'} – ${record.endDate?formatArchiveDate(record.endDate):'—'}`
+        : 'Dates not recorded';
+      const tags=Array.isArray(record.tags)?record.tags:[];
+      document.getElementById('payslipViewerContent').innerHTML=`
+        <div class="payslip-hero">
+          <div class="payslip-hero-top">
+            <div class="payslip-brand"><img src="SLogo.png" alt=""><span>Sweldo.</span></div>
+            <button class="payslip-close" onclick="closePayslipViewer()" aria-label="Close payslip viewer"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+          <div class="payslip-kicker">Take-home pay</div>
+          <div class="payslip-net">${fmt(Number(record.net)||0)}</div>
+          <div class="payslip-date">Paid ${escapeHtml(formatArchiveDate(record.date))}</div>
+        </div>
+        <div class="payslip-body">
+          <div class="payslip-identity">
+            <strong id="payslipViewerTitle">${escapeHtml(record.employer||'Saved Payslip')}</strong>
+            <span>${escapeHtml(record.period||'Payroll')} · ${escapeHtml(periodDates)}</span>
+          </div>
+          <div class="payslip-summary">
+            <div class="payslip-summary-item"><span>Gross pay</span><strong>${fmt(Number(record.gross)||0)}</strong></div>
+            <div class="payslip-summary-item deduction"><span>Total deductions</span><strong>−${fmt(total)}</strong></div>
+          </div>
+          ${record.salary!=null&&record.salary!==''?`<div class="payslip-line"><span>Monthly basic salary</span><strong>${fmt(Number(record.salary)||0)}</strong></div>`:''}
+          <div class="payslip-section-title">Deduction breakdown</div>
+          ${deductionItems.map(([label,key])=>`<div class="payslip-line deduction"><span>${label}</span><strong>−${fmt(key===null?total:(Number(breakdown[key])||0))}</strong></div>`).join('')}
+          ${tags.length?`<div class="payslip-tags">${tags.map(tag=>`<span class="payslip-tag">#${escapeHtml(tag)}</span>`).join('')}</div>`:''}
+          ${record.note?`<div class="payslip-note-box"><strong>Note</strong><br>${escapeHtml(record.note)}</div>`:''}
+        </div>`;
+      document.getElementById('payslipViewerDuplicate').onclick=()=>{duplicateArchiveRecord(record.id);closePayslipViewer();};
+      document.getElementById('payslipViewerEdit').onclick=()=>{closePayslipViewer();editArchiveRecord(record.id);};
+      document.getElementById('payslipViewerDelete').onclick=()=>{closePayslipViewer();deleteArchiveRecord(record.id);};
+      document.getElementById('payslipViewerModal').style.display='flex';
+      document.querySelector('#payslipViewerModal .payslip-scroll').scrollTop=0;
+    }
+
     function renderPayrollArchive(){
       const all=getPayrollArchive().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
       const yearEl=document.getElementById('archiveYearFilter'),profileEl=document.getElementById('archiveProfileFilter');
@@ -3333,8 +3496,7 @@
       document.getElementById('archiveAverage').textContent=fmt(avg);document.getElementById('archiveLatest').textContent=fmt(latest);
       const list=document.getElementById('archiveList');
       if(!records.length){list.innerHTML='<div class="archive-empty">No payroll records match this view.</div>';drawArchiveChart(records);return;}
-      list.innerHTML=records.map(r=>{const eid=encodeURIComponent(String(r.id));const accuracy=r.estimateNet?Math.max(0,100-Math.abs((r.net-r.estimateNet)/(r.net||1))*100):null;return `<div class="archive-item"><button class="archive-toggle" onclick="toggleArchiveItem(this)" aria-expanded="false"><div class="archive-top"><div style="display:flex;align-items:center;min-width:0"><span class="archive-chevron">⌄</span><div><div class="archive-date">${escapeHtml(formatArchiveDate(r.date))}</div><div class="archive-period">${escapeHtml(r.period||'Payroll')} ${r.employer?'• '+escapeHtml(r.employer):''}</div></div></div><div><div class="archive-net">${fmt(Number(r.net)||0)}</div><div style="font-size:11px;color:var(--text-muted);text-align:right">Take-home</div></div></div></button><div class="archive-details-wrap"><div class="archive-details-inner"><div class="archive-details"><div class="archive-detail">Gross Pay<strong>${fmt(Number(r.gross)||0)}</strong></div><div class="archive-detail">Deductions<strong style="color:var(--danger)">−${fmt(Number(r.deductions)||0)}</strong></div><div class="archive-detail">Period<strong>${escapeHtml(r.startDate||'—')} – ${escapeHtml(r.endDate||'—')}</strong></div><div class="archive-detail" style="text-align:right"><button class="archive-action" onclick="editArchiveRecord(decodeURIComponent('${eid}'))">Edit</button><button class="archive-action" onclick="duplicateArchiveRecord(decodeURIComponent('${eid}'))">Duplicate</button><button class="archive-action delete" onclick="deleteArchiveRecord(decodeURIComponent('${eid}'))">Delete</button></div></div>${renderArchivedDeductions(r)}${r.tags?.length?`<div class="archive-note">${r.tags.map(t=>'#'+escapeHtml(t)).join(' ')}</div>`:''}${r.note?`<div class="archive-note">${escapeHtml(r.note)}</div>`:''}${accuracy!==null?`<div class="archive-note">Estimate accuracy: <strong>${accuracy.toFixed(1)}%</strong></div>`:''}</div></div></div>`;}).join('');
-      decorateArchiveActionIcons(list);
+      list.innerHTML=records.map(r=>{const eid=encodeURIComponent(String(r.id));return `<div class="archive-item"><button class="archive-pay-row" onclick="openPayslipViewer(decodeURIComponent('${eid}'))" aria-label="View saved payslip for ${escapeHtml(formatArchiveDate(r.date))}"><div class="archive-pay-main"><div class="archive-pay-title"><svg class="btn-icon" aria-hidden="true"><use href="#i-receipt"/></svg>${escapeHtml(formatArchiveDate(r.date))}</div><div class="archive-pay-meta">${escapeHtml(r.period||'Payroll')}${r.employer?' · '+escapeHtml(r.employer):''}</div></div><div class="archive-pay-amount"><strong>${fmt(Number(r.net)||0)}</strong><span class="archive-view-label">View payslip <svg aria-hidden="true"><use href="#i-arrow-right"/></svg></span></div></button></div>`;}).join('');
       drawArchiveChart(records);
     }
     function decorateArchiveActionIcons(root){
@@ -3364,6 +3526,10 @@
 
     document.getElementById('compareModal').addEventListener('click', (event) => {
       if (event.target.id === 'compareModal') closeCompareModal();
+    });
+
+    document.getElementById('payslipViewerModal').addEventListener('click', (event) => {
+      if (event.target.id === 'payslipViewerModal') closePayslipViewer();
     });
 
     // Theme Switcher
