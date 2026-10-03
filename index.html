@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 
-    <link rel="icon" type="image/png" href="SLogo.png">
+    <link rel="icon" type="image/svg+xml" href="sweldo-mark.svg">
     <link rel="apple-touch-icon" href="Sweldo Logo.png">
-    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="manifest" href="manifest.webmanifest?v=1.7.1">
     <meta name="theme-color" id="themeColorMeta" content="#F3F5FA">
 
   <meta charset="UTF-8">
@@ -1713,9 +1713,13 @@
       .payslip-viewer-actions { padding-left:18px; padding-right:18px; }
       .payslip-viewer-actions { grid-template-columns:1fr 1fr; }
     }
+.cashual-return{display:none;position:fixed;z-index:1000;top:calc(env(safe-area-inset-top,0px) + 12px);left:12px;min-height:42px;padding:0 14px;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(7,26,73,.92);color:#fff;text-decoration:none;font:700 13px/1 system-ui,-apple-system,sans-serif;box-shadow:0 8px 24px rgba(7,26,73,.24);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.cashual-return svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.from-cashual .cashual-return{display:flex}@media(max-width:520px){.cashual-return{min-width:42px;width:42px;padding:0;justify-content:center}.cashual-return span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
 </style>
+<script>if(new URLSearchParams(location.search).get('source')==='cashual')document.documentElement.classList.add('from-cashual')</script>
 </head>
 <body>
+
+  <a class="cashual-return" href="https://vhyxnz.github.io/Cashual/" aria-label="Back to Cashual" title="Back to Cashual"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6M9 12h10"/></svg><span>Back to Cashual</span></a>
 
   <svg class="icon-sprite" aria-hidden="true" focusable="false">
     <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></symbol>
@@ -1796,7 +1800,7 @@
       <div class="home-tip">
         <strong>Sweldo.</strong> Your salary, simplified. Use the calculator for estimates;
         actual payroll may vary based on your employer's policies and payroll rules.
-        <span class="app-version" id="appVersionLabel">Version 1.6.0</span>
+        <span class="app-version" id="appVersionLabel">Version 1.9.0</span>
       </div>
     </div>
   </div>
@@ -1882,9 +1886,23 @@
           </div>
         </div>
         <div class="input-group">
-          <label class="input-label">Days / Month</label>
-          <input type="number" id="daysPerMonth" value="20" min="1" max="31" step="0.5" style="padding-left:8px;" oninput="calculate()">
-          <small class="input-hint">Paid working days used to derive daily pay.</small>
+          <label class="input-label">Calendar-Day Divisor</label>
+          <input type="number" id="daysPerMonth" value="30" min="1" max="31" step="0.5" inputmode="decimal" style="padding-left:8px;" oninput="calculate()">
+          <small class="input-hint">Daily rate is monthly salary ÷ this divisor. Default: 30.</small>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Cutoff Basis</label>
+          <div class="badge-info">15 paid calendar days • 10 working days</div>
+          <small class="input-hint">Applied automatically to every cutoff.</small>
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="cutoffStartDate">Cutoff Start</label>
+          <input type="date" id="cutoffStartDate" onchange="syncCutoffDates()">
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="cutoffEndDate">Cutoff End</label>
+          <input type="date" id="cutoffEndDate" onchange="syncCutoffDates()">
+          <small class="input-hint" id="cutoffDateHint">Dates are counted inclusively.</small>
         </div>
       </div>
       <div class="badge-info" id="hourlyRateDisplay">Daily Rate: ₱1,500.00 | Hourly: ₱187.50</div>
@@ -2150,13 +2168,13 @@
           <div class="settings-label">About & updates</div>
           <div class="settings-row">
             <div class="settings-row-copy"><strong>Sweldo</strong><span>Philippine salary calculator and payroll archive.</span></div>
-            <span class="settings-version" id="settingsVersion">v1.6.0</span>
+            <span class="settings-version" id="settingsVersion">v1.9.0</span>
           </div>
           <div class="settings-row">
             <div class="settings-row-copy"><strong>Software update</strong><span>Check Local Hub or the installed PWA for a newer release.</span></div>
             <button class="btn-primary" id="checkUpdateBtn" onclick="checkForAppUpdates()"><svg class="btn-icon" aria-hidden="true"><use href="#i-reset"/></svg>Check update</button>
           </div>
-          <div class="update-status" id="updateStatus" aria-live="polite">You’re using Sweldo v1.6.0.</div>
+          <div class="update-status" id="updateStatus" aria-live="polite">You’re using Sweldo v1.8.1.</div>
         </section>
       </div>
     </div>
@@ -2337,7 +2355,7 @@
 
   <script>
 
-    const APP_VERSION = '1.6.0';
+    const APP_VERSION = '1.9.0';
     document.getElementById('appVersionLabel').textContent=`Version ${APP_VERSION}`;
 
     function showView(view) {
@@ -2368,8 +2386,32 @@
     }
 
 
+    const PAID_DAYS_PER_CUTOFF = 15;
+    const WORKING_DAYS_PER_CUTOFF = 10;
     let currentPeriod = localStorage.getItem('sweldo_period') || 'semi-1';
     const fmt = (num) => '₱' + (num || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function inclusiveDateCount(startValue,endValue){
+      if(!startValue||!endValue)return 0;
+      const start=Date.parse(startValue+'T00:00:00Z'),end=Date.parse(endValue+'T00:00:00Z');
+      if(!Number.isFinite(start)||!Number.isFinite(end)||end<start)return 0;
+      return Math.floor((end-start)/86400000)+1;
+    }
+    function syncCutoffDates(){
+      const start=document.getElementById('cutoffStartDate').value,end=document.getElementById('cutoffEndDate').value;
+      const days=inclusiveDateCount(start,end),hint=document.getElementById('cutoffDateHint');
+      if(start&&end&&!days){
+        hint.textContent='End date must be on or after the start date.';
+        hint.style.color='var(--danger)';
+      }else if(days){
+        hint.textContent=`${days}-day date range · pay remains fixed at ${PAID_DAYS_PER_CUTOFF} paid days`;
+        hint.style.color='var(--success)';
+      }else{
+        hint.textContent='Dates are counted inclusively.';
+        hint.style.color='';
+      }
+      calculate();
+    }
 
     function setPeriod(period, btn) {
       if (currentPeriod === 'semi-1' || currentPeriod === 'semi-2') saveCurrentCutoffDraft();
@@ -2393,7 +2435,13 @@
     }
     function loadCutoffDraft(period){
       const draft=getProfileCutoffDrafts()[period];
-      if(!draft?.state){calculate();saveCurrentCutoffDraft();return;}
+      if(!draft?.state){
+        document.getElementById('cutoffStartDate').value='';
+        document.getElementById('cutoffEndDate').value='';
+        const hint=document.getElementById('cutoffDateHint');
+        if(hint){hint.textContent='Dates are for reference; pay is fixed at 15 days.';hint.style.color='';}
+        calculate();saveCurrentCutoffDraft();return;
+      }
       restoringCutoffDraft=true;populateForm({...draft.state,period});restoringCutoffDraft=false;calculate();
     }
 
@@ -2401,39 +2449,32 @@
       const row = selectElem.parentElement;
       const daysInput = row.querySelector('.shift-days');
       const ndInput = row.querySelector('.shift-nd-hrs');
-      const isOff = selectElem.value === 'off';
-      if (isOff) ndInput.value = 0;
-      else if (selectElem.value === 'night') ndInput.value = 8;
+      if (selectElem.value === 'night') ndInput.value = 8;
       else if (selectElem.value === 'morning' || selectElem.value === 'afternoon') ndInput.value = 0;
       daysInput.disabled = false;
-      daysInput.setAttribute('aria-label',isOff?'Off days':'Days worked');
-      ndInput.disabled = isOff;
+      daysInput.setAttribute('aria-label','Days worked');
+      ndInput.disabled = false;
       calculate();
     }
 
-    function addShift(type = 'morning', days = 0, nd = 0) {
+    function addShift(type = 'morning', days = 0, nd = 0, skipCalculate = false) {
       const shiftList = document.getElementById('shiftList');
       const div = document.createElement('div');
+      if(type==='off')return;
       div.className = 'shift-row';
       div.innerHTML = `
         <select class="shift-type" onchange="handleShiftChange(this)">
           <option value="morning" ${type === 'morning' ? 'selected' : ''}>6 AM–2 PM</option>
           <option value="afternoon" ${type === 'afternoon' ? 'selected' : ''}>2 PM–10 PM</option>
           <option value="night" ${type === 'night' ? 'selected' : ''}>10 PM–6 AM</option>
-          <option value="off" ${type === 'off' ? 'selected' : ''}>Off</option>
           <option value="custom" ${type === 'custom' ? 'selected' : ''}>Custom</option>
         </select>
-        <input type="number" class="shift-days" min="0" max="31" step="0.5" value="${days}" placeholder="Days" aria-label="Days worked" style="padding-left:6px;" oninput="calculate()">
+        <input type="number" class="shift-days" min="0" max="10" step="0.5" value="${days}" placeholder="Days" aria-label="Days worked" style="padding-left:6px;" oninput="calculate()">
         <input type="number" class="shift-nd-hrs" min="0" max="24" step="0.25" value="${nd}" placeholder="ND" aria-label="Night differential hours per day" style="padding-left:6px;" oninput="calculate()">
         <button class="btn-remove" aria-label="Remove shift row" title="Remove shift" onclick="removeShift(this)">${iconSvg('x')}</button>
       `;
       shiftList.appendChild(div);
-      if (type === 'off') {
-        div.querySelector('.shift-nd-hrs').value = 0;
-        div.querySelector('.shift-days').setAttribute('aria-label','Off days');
-        div.querySelector('.shift-nd-hrs').disabled = true;
-      }
-      calculate();
+      if(!skipCalculate)calculate();
     }
 
     function removeShift(btn) {
@@ -2528,9 +2569,10 @@
     function renderDefaultShifts() {
       const shiftList = document.getElementById('shiftList');
       shiftList.innerHTML = '';
-      addShift('morning', 5, 0);
-      addShift('afternoon', 0, 0);
-      addShift('night', 5, 8);
+      addShift('morning', 2, 0, true);
+      addShift('afternoon', 3, 0, true);
+      addShift('night', 5, 8, true);
+      calculate();
     }
 
     // MULTIPLE PROFILES PERSISTENCE
@@ -2542,15 +2584,26 @@
       if (!data) {
         return {
           "Default Profile": {
-            salary: 30000, days: 20,
-            shifts: [{ type: 'morning', days: 5, nd: 0 }, { type: 'afternoon', days: 0, nd: 0 }, { type: 'night', days: 5, nd: 8 }],
+            salary: 30000, days: 30, cutoffStart: '', cutoffEnd: '',
+            shifts: [{ type: 'morning', days: 2, nd: 0 }, { type: 'afternoon', days: 3, nd: 0 }, { type: 'night', days: 5, nd: 8 }],
             otHrs: 0, restDays: 0, restOtHrs: 0,
             holidays: [],
             incGov: true, incPhil: true, incPagibig: true, incTax: true, otherDeductions: 0
           }
         };
       }
-      return JSON.parse(data);
+      const profiles = JSON.parse(data);
+      let migrated = false;
+      Object.values(profiles).forEach(profile => {
+        if (!profile || typeof profile !== 'object') return;
+        if (!Array.isArray(profile.shifts)) profile.shifts = [];
+        const normalized=profile.shifts.filter(shift=>shift?.type!=='off');
+        const divisor=Math.min(31,Math.max(1,Number(profile.days)||30));
+        if(profile.days!==divisor||'cutoffDays' in profile||JSON.stringify(normalized)!==JSON.stringify(profile.shifts))migrated=true;
+        profile.days=divisor;delete profile.cutoffDays;profile.cutoffStart=profile.cutoffStart||'';profile.cutoffEnd=profile.cutoffEnd||'';profile.shifts=normalized;
+      });
+      if (migrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+      return profiles;
     }
 
     function saveProfilesToStorage(profiles) {
@@ -2569,7 +2622,9 @@
 
       return {
         salary: parseFloat(document.getElementById('basicSalary').value) || 0,
-        days: parseFloat(document.getElementById('daysPerMonth').value) || 20,
+        days: Math.min(31,Math.max(1,valueOf('daysPerMonth')||30)),
+        cutoffStart: document.getElementById('cutoffStartDate').value,
+        cutoffEnd: document.getElementById('cutoffEndDate').value,
         shifts: shifts,
         otHrs: parseFloat(document.getElementById('regularOtHrs').value) || 0,
         restDays: parseFloat(document.getElementById('restDaysWorked').value) || 0,
@@ -2589,12 +2644,15 @@
 
     function populateForm(state) {
       document.getElementById('basicSalary').value = state.salary ?? 30000;
-      document.getElementById('daysPerMonth').value = state.days ?? 20;
+      document.getElementById('daysPerMonth').value = Math.min(31,Math.max(1,Number(state.days)||30));
+      document.getElementById('cutoffStartDate').value = state.cutoffStart || '';
+      document.getElementById('cutoffEndDate').value = state.cutoffEnd || '';
 
       const shiftList = document.getElementById('shiftList');
+      const savedShifts=Array.isArray(state.shifts)?state.shifts.filter(s=>s?.type!=='off'):[];
       shiftList.innerHTML = '';
-      if (state.shifts && state.shifts.length > 0) {
-        state.shifts.forEach(s => addShift(s.type, s.days, s.nd));
+      if (savedShifts.length > 0) {
+        savedShifts.forEach(s => addShift(s.type, s.days, s.nd, true));
       } else {
         renderDefaultShifts();
       }
@@ -2619,6 +2677,7 @@
       });
       currentPeriod = state.period || currentPeriod;
       syncPeriodUI();
+      syncCutoffDates();
 
       calculate();
       if (typeof markSaved === 'function') markSaved();
@@ -2797,8 +2856,8 @@
       editingArchiveId = null;
       document.getElementById('archiveModalTitle').textContent = 'Save Current Payroll';
       document.getElementById('archiveDate').value = today;
-      document.getElementById('archiveStart').value = '';
-      document.getElementById('archiveEnd').value = '';
+      document.getElementById('archiveStart').value = document.getElementById('cutoffStartDate').value || '';
+      document.getElementById('archiveEnd').value = document.getElementById('cutoffEndDate').value || '';
       document.getElementById('archiveEmployer').value = document.getElementById('profileSelect').value || '';
       document.getElementById('archiveTags').value = 'estimate';
       document.getElementById('archivePeriod').value = currentPeriod === 'monthly' ? 'Monthly' : 'Semi-Monthly';
@@ -3379,13 +3438,12 @@
       return money(91770.70 + (t - 333333) * .35);
     }
 
-    function validateInputs(totalDays, holidayDays, totalPaidScheduleDays = totalDays) {
+    function validateInputs(totalDays, holidayDays) {
       const errors=[];
       document.querySelectorAll('.field-error').forEach(el=>el.classList.remove('field-error'));
       const mark=(id,msg)=>{ const el=document.getElementById(id); if(el)el.classList.add('field-error'); errors.push(msg); };
       if(valueOf('basicSalary')<=0) mark('basicSalary','Enter a monthly salary greater than zero.');
-      if(valueOf('daysPerMonth')<1||valueOf('daysPerMonth')>31) mark('daysPerMonth','Paid working days must be between 1 and 31.');
-      if(totalPaidScheduleDays>31) errors.push('Total worked and paid off days cannot exceed 31 for one payroll period.');
+      if(Math.abs(totalDays-WORKING_DAYS_PER_CUTOFF)>.001) errors.push(`Shift days must total ${WORKING_DAYS_PER_CUTOFF}. Current total: ${totalDays}.`);
       if(valueOf('absenceDays')>totalDays) mark('absenceDays','Absence days cannot exceed entered shift days.');
       if(holidayDays>totalDays) errors.push('Holiday days exceed total shift days; confirm that the same worked days are represented correctly.');
       document.querySelectorAll('input[type=number]').forEach(el=>{if(Number(el.value)<0){el.classList.add('field-error');errors.push('Negative payroll amounts are not allowed.');}});
@@ -3397,26 +3455,22 @@
 
     function calculate(scroll = false) {
       const calculationPeriod=currentPeriod==='monthly'?'semi-1':currentPeriod;
-      const baseMonthly=valueOf('basicSalary'), daysPerMonth=valueOf('daysPerMonth')||20;
+      const baseMonthly=valueOf('basicSalary'), daysPerMonth=Math.min(31,Math.max(1,valueOf('daysPerMonth')||30)), cutoffDays=PAID_DAYS_PER_CUTOFF;
       const rules=getActivePayrollRules(), hoursPerDay=rules.hoursPerDay||8;
       const dailyRate=baseMonthly/daysPerMonth, hourlyRate=dailyRate/hoursPerDay;
-      let totalDaysWorked=0,totalOffDays=0,totalNDPay=0;
+      let totalDaysWorked=0,totalNDPay=0;
       document.querySelectorAll('.shift-row').forEach(row=>{
         const days=Math.max(0,parseFloat(row.querySelector('.shift-days').value)||0);
         const ndHrs=Math.max(0,parseFloat(row.querySelector('.shift-nd-hrs').value)||0);
-        if(row.querySelector('.shift-type').value==='off')totalOffDays+=days;
-        else{
-          totalDaysWorked+=days;
-          totalNDPay+=days*ndHrs*hourlyRate*((rules.nightDiff ?? DEFAULT_NIGHT_DIFF_PERCENT)/100);
-        }
+        totalDaysWorked+=days;
+        totalNDPay+=days*ndHrs*hourlyRate*((rules.nightDiff ?? DEFAULT_NIGHT_DIFF_PERCENT)/100);
       });
       const holidayDays=holidays.reduce((s,h)=>s+(Number(h.days)||0),0);
-      const totalPaidScheduleDays=totalDaysWorked+totalOffDays;
-      const errors=validateInputs(totalDaysWorked,holidayDays,totalPaidScheduleDays);
+      const errors=validateInputs(totalDaysWorked,holidayDays);
       const absenceDays=valueOf('absenceDays'), undertimeHours=valueOf('undertimeHours');
-      const payableDays=Math.max(0,totalPaidScheduleDays-absenceDays);
+      const payableDays=Math.max(0,cutoffDays-absenceDays);
       const attendanceDeduction=absenceDays*dailyRate+undertimeHours*hourlyRate;
-      const basicEarned=Math.max(0,dailyRate*totalPaidScheduleDays-attendanceDeduction);
+      const basicEarned=Math.max(0,dailyRate*cutoffDays-attendanceDeduction);
       const regularOtPay=valueOf('regularOtHrs')*hourlyRate*((rules.regularOt||125)/100);
       const restDayPay=valueOf('restDaysWorked')*dailyRate*((rules.restDay||130)/100);
       const restDayOtPay=valueOf('restDayOtHrs')*hourlyRate*((rules.restOt||169)/100);
@@ -3439,7 +3493,7 @@
       const netPay=Math.max(0,grossPay-totalDeductions);
       const write=(id,text)=>{const el=document.getElementById(id);if(el)el.textContent=text;};
       write('hourlyRateDisplay',`Daily Rate: ${fmt(dailyRate)} | Hourly: ${fmt(hourlyRate)}`);
-      write('totalDaysDisplay',`${totalDaysWorked} worked • ${totalOffDays} off • ${payableDays} paid day(s)`);
+      write('totalDaysDisplay',`${totalDaysWorked} / ${WORKING_DAYS_PER_CUTOFF} working days • ${payableDays} paid days`);
       write('nightDiffDisplay',fmt(totalNDPay)); write('netPayDisplay',fmt(netPay)); write('grossDisplay',fmt(grossPay));
       write('deductionDisplay',`−${fmt(totalDeductions)}`); write('valBasicEarned',fmt(basicEarned)); write('valNDBreakdown',fmt(totalNDPay));
       write('valOTBreakdown',fmt(totalOTPay)); write('valHolidayBreakdown',fmt(holidayPremium)); write('holidayPremiumDisplay',fmt(holidayPremium));
@@ -3447,7 +3501,7 @@
       [['rowGov',incGov],['rowPhilhealth',incPhil],['rowPagibig',incPagibig],['rowTax',incTax]].forEach(([id,on])=>document.getElementById(id).classList.toggle('disabled',!on));
       write('dockNet',fmt(netPay));write('dockMeta',`Gross ${fmt(grossPay)} · Deductions ${fmt(totalDeductions)}`);
       const formula=document.getElementById('formulaDetails');
-      if(formula)formula.innerHTML=`Basic: ${totalDaysWorked} worked + ${totalOffDays} paid off = ${totalPaidScheduleDays} paid days × ${fmt(dailyRate)} − attendance adjustment ${fmt(attendanceDeduction)} = <strong>${fmt(basicEarned)}</strong><br>Premiums: ND ${fmt(totalNDPay)} + OT/rest day ${fmt(totalOTPay)} + holiday ${fmt(holidayPremium)}<br>Mandatory employee share: SSS ${fmt(sss)}, PhilHealth ${fmt(phil)}, Pag-IBIG ${fmt(pagibig)}<br>Taxable compensation for this period: ${fmt(taxableIncome)} → withholding ${fmt(tax)}<br><strong>Net = ${fmt(grossPay)} − ${fmt(totalDeductions)} = ${fmt(netPay)}</strong>`;
+      if(formula)formula.innerHTML=`Basic: fixed ${cutoffDays} paid days × ${fmt(dailyRate)} (${fmt(baseMonthly)} ÷ ${daysPerMonth}), − attendance adjustment ${fmt(attendanceDeduction)} = <strong>${fmt(basicEarned)}</strong><br>Scheduled work: ${totalDaysWorked} of ${WORKING_DAYS_PER_CUTOFF} days<br>Premiums: ND ${fmt(totalNDPay)} + OT/rest day ${fmt(totalOTPay)} + holiday ${fmt(holidayPremium)}<br>Mandatory employee share: SSS ${fmt(sss)}, PhilHealth ${fmt(phil)}, Pag-IBIG ${fmt(pagibig)}<br>Taxable compensation for this period: ${fmt(taxableIncome)} → withholding ${fmt(tax)}<br><strong>Net = ${fmt(grossPay)} − ${fmt(totalDeductions)} = ${fmt(netPay)}</strong>`;
       const cutoffResult={gross:grossPay,deductions:totalDeductions,net:netPay,basic:basicEarned,nightDiff:totalNDPay,ot:totalOTPay,holiday:holidayPremium,sss,phil,pagibig,tax,other,taxableIncome,errors};
       if(currentPeriod==='monthly') renderMonthlySummary(cutoffResult);
       else { window.currentPayrollResult=cutoffResult; saveCurrentCutoffDraft(); markUnsaved(); }
