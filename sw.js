@@ -1,4 +1,4 @@
-const CACHE='sweldo-v35';
+const CACHE='sweldo-v36';
 const ASSETS=['./','./index.html','./sweldo-mark.svg','./SLogo.png','./Sweldo Logo.png','./manifest.webmanifest','./version.json'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
